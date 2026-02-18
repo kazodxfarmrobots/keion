@@ -51,6 +51,7 @@
         guitarCanvas: document.getElementById("guitarCanvas"),
         guitarStartBtn: document.getElementById("guitarStartBtn"),
         guitarJumpBtn: document.getElementById("guitarJumpBtn"),
+        guitarSlideBtn: document.getElementById("guitarSlideBtn"),
         guitarTimer: document.getElementById("guitarTimer"),
         guitarBest: document.getElementById("guitarBest"),
         guitarHint: document.getElementById("guitarHint")
@@ -124,7 +125,7 @@
         guitarLoopId: 0,
         guitarRank: 1,
         guitarTime: 0,
-        guitarTimeLimit: 40,
+        guitarTimeLimit: 45,
         guitarLastTick: 0,
         guitarWorld: null
       };
@@ -224,8 +225,8 @@
       }
 
       function rankBySeconds(sec) {
-        if (sec <= 16) return 3;
-        if (sec <= 28) return 2;
+        if (sec >= 35) return 3;
+        if (sec >= 22) return 2;
         return 1;
       }
 

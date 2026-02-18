@@ -1,4 +1,4 @@
-﻿    .guitargame-layer {
+    .guitargame-layer {
       position: absolute;
       left: 12px;
       right: 12px;
@@ -7,9 +7,25 @@
       z-index: 9;
       display: none;
       border: 2px solid #ffffffa0;
-      background: #0d0d0de8;
+      background:
+        radial-gradient(circle at 84% 10%, #61d7ff30 0%, transparent 44%),
+        radial-gradient(circle at 16% 0%, #ff85612b 0%, transparent 40%),
+        linear-gradient(180deg, #070a0fdc 0%, #0d0d0de8 100%);
       clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
       padding: 10px;
+      overflow: hidden;
+    }
+
+    .guitargame-layer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(118deg, transparent 0 40%, #ffffff14 50%, transparent 60%),
+        repeating-linear-gradient(90deg, #ffffff08 0 1px, transparent 1px 34px);
+      opacity: 0.3;
+      z-index: 0;
     }
 
     .guitargame-layer.active {
@@ -17,6 +33,8 @@
     }
 
     .chase-head {
+      position: relative;
+      z-index: 1;
       display: flex;
       gap: 8px;
       align-items: center;
@@ -25,17 +43,22 @@
     }
 
     .chase-canvas {
+      position: relative;
+      z-index: 1;
       width: 100%;
       height: calc(100% - 98px);
       border: 2px solid #ffffff66;
-      background: linear-gradient(180deg, #291a1e 0%, #1b1b1b 62%, #0a0a0a 100%);
+      background: linear-gradient(180deg, #1f2738 0%, #171a25 62%, #0a0a0a 100%);
       display: block;
       touch-action: none;
+      box-shadow: inset 0 0 0 1px #ffffff33, inset 0 -24px 40px #00000078;
     }
 
     .chase-actions {
+      position: relative;
+      z-index: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       margin-top: 8px;
     }
@@ -71,4 +94,3 @@
     }
 
     .howto p { margin: 8px 0; line-height: 1.6; }
-

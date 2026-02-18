@@ -31,14 +31,14 @@
           bg: "hallway",
           chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "guitar" }],
           speaker: "香",
-          text: "えっ...ギターが盗まれた！？ 追いかけて、取り返して！",
+          text: "今日の私は逃げない。まずは廊下の危険地帯、45秒耐えてみせて。",
           next: "guitarChaseGame"
         },
         guitarChaseGame: {
           bg: "hallway",
           chars: [{ slot: "left", key: "hero" }],
-          speaker: "CHASE SYSTEM",
-          text: "2Dスクロール追跡: 障害物をジャンプで回避し、犯人に追いつけ。タイムでステータスが上がる。",
+          speaker: "SURVIVAL SYSTEM",
+          text: "2Dサバイバル回避: 障害物をJUMP/SLIDEで避け、45秒生き残れ。HPが0で終了。",
           next: "gSuccess"
         },
         pickGuitar: {
@@ -70,7 +70,7 @@
           bg: "classroom",
           chars: [{ slot: "right", key: "guitar" }],
           speaker: "香",
-          text: "...ありがとう。ギター、取り返してくれたんだね。私も本気で弾く。",
+          text: "...ありがとう。その覚悟、ちゃんと伝わった。私も本気で弾く。",
           next: "introBass"
         },
         introBass: {

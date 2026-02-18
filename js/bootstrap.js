@@ -19,6 +19,16 @@
           e.preventDefault();
           guitarJump();
         });
+        el.guitarSlideBtn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          guitarSlide(true);
+        });
+        ["pointerup", "pointerleave", "pointercancel"].forEach((evt) => {
+          el.guitarSlideBtn.addEventListener(evt, (e) => {
+            e.preventDefault();
+            guitarSlide(false);
+          });
+        });
         el.guitarCanvas.addEventListener("pointerdown", (e) => {
           e.preventDefault();
           guitarJump();
@@ -50,15 +60,14 @@
             }
           } else if (el.gameScreen.classList.contains("active")) {
             if (state.guitarGameActive) {
-              if (e.key.toLowerCase() === "s") {
-                e.preventDefault();
-                state.guitarTime = 0;
-                endGuitarGame(true);
-                return;
-              }
               if (e.key === " " || e.key === "ArrowUp") {
                 e.preventDefault();
                 guitarJump();
+                return;
+              }
+              if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
+                e.preventDefault();
+                guitarSlide(true);
               }
               return;
             }
@@ -66,6 +75,13 @@
               e.preventDefault();
               advance();
             }
+          }
+        });
+        window.addEventListener("keyup", (e) => {
+          if (!state.guitarGameActive) return;
+          if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
+            e.preventDefault();
+            guitarSlide(false);
           }
         });
 

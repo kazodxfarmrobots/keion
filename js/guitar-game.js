@@ -1,23 +1,36 @@
-﻿      function resetGuitarWorld() {
+      function resetGuitarWorld() {
         state.guitarWorld = {
-          heroX: 0,
           heroY: 0,
           heroVy: 0,
-          heroW: 42,
-          heroH: 52,
+          heroW: 44,
+          heroStandH: 52,
+          heroSlideH: 34,
           heroScreenX: 150,
-          heroSpeed: 210,
-          thiefX: 460,
-          thiefW: 42,
-          thiefH: 56,
-          thiefSpeed: 176,
-          gravity: 1300,
-          jumpV: 510,
-          obstacleAcc: 0,
+          gravity: 1380,
+          jumpV: 540,
+          slideHold: false,
+          slideBlend: 0,
+          groundY: 320,
+          scrollX: 0,
+          speed: 240,
+          spawnIn: 1.2,
           obstacles: [],
-          hitLock: 0,
-          runPhase: 0
+          hp: 3,
+          invuln: 0,
+          hitFlash: 0,
+          screenShake: 0,
+          slowMo: 0,
+          streak: 0,
+          bestStreak: 0,
+          nearMiss: 0,
+          wave: 1,
+          waveBanner: "WAVE 1",
+          waveBannerAt: 1.8
         };
+      }
+
+      function getHeroHeight(w) {
+        return w.heroStandH - (w.heroStandH - w.heroSlideH) * w.slideBlend;
       }
 
       function guitarJump() {
@@ -28,125 +41,263 @@
         }
       }
 
+      function guitarSlide(active) {
+        if (!state.guitarWorld) return;
+        state.guitarWorld.slideHold = !!active;
+      }
+
+      function obstacleRect(obs, groundY) {
+        if (obs.kind === "high") {
+          return {
+            x: obs.x,
+            y: groundY - 74,
+            w: obs.w,
+            h: 22
+          };
+        }
+        return {
+          x: obs.x,
+          y: groundY - obs.h,
+          w: obs.w,
+          h: obs.h
+        };
+      }
+
+      function rankLabel(rank) {
+        return rank === 3 ? "S" : rank === 2 ? "A" : "B";
+      }
+
+      function liveRankNow(timeSec, hp) {
+        if (timeSec >= 34 && hp >= 2) return 3;
+        if (timeSec >= 22 && hp >= 1) return 2;
+        return 1;
+      }
+
       function drawGuitarGame(ctx, width, height) {
         const w = state.guitarWorld;
         const groundY = height - 40;
-        const stride = Math.sin(w.runPhase || 0);
-        const stride2 = Math.sin((w.runPhase || 0) + Math.PI);
-        ctx.clearRect(0, 0, width, height);
+        w.groundY = groundY;
+        const heroH = getHeroHeight(w);
+        const heroTop = groundY - heroH - w.heroY;
+        const heroBottom = heroTop + heroH;
+        const heroLeft = w.heroScreenX;
+        const heroRight = heroLeft + w.heroW;
+        const shake = w.screenShake > 0 ? (Math.random() - 0.5) * 10 * (w.screenShake / 0.3) : 0;
+        const farOffset = -(w.scrollX * 0.18) % width;
+        const midOffset = -(w.scrollX * 0.45) % width;
+        const laneOffset = -(w.scrollX * 1.35) % 56;
 
-        const bg = ctx.createLinearGradient(0, 0, 0, groundY);
-        bg.addColorStop(0, "#2f0f15");
-        bg.addColorStop(0.55, "#1b1b24");
-        bg.addColorStop(1, "#121212");
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, width, groundY);
+        ctx.save();
+        ctx.translate(shake, 0);
+        ctx.clearRect(-12, 0, width + 24, height);
 
-        ctx.globalAlpha = 0.18;
-        ctx.fillStyle = "#ffd447";
-        ctx.fillRect(0, 26, width, 5);
+        const sky = ctx.createLinearGradient(0, 0, 0, groundY);
+        sky.addColorStop(0, "#140f1f");
+        sky.addColorStop(0.5, "#172839");
+        sky.addColorStop(1, "#131922");
+        ctx.fillStyle = sky;
+        ctx.fillRect(-12, 0, width + 24, groundY);
+
+        for (let r = 0; r < 2; r += 1) {
+          ctx.globalAlpha = 0.2;
+          ctx.fillStyle = "#7de3ff";
+          const baseX = r === 0 ? farOffset : farOffset + width;
+          for (let i = 0; i < width; i += 120) {
+            ctx.fillRect(baseX + i, 42, 36, 2);
+          }
+        }
+        for (let r = 0; r < 2; r += 1) {
+          ctx.globalAlpha = 0.14;
+          ctx.fillStyle = "#ffd25d";
+          const baseX = r === 0 ? midOffset : midOffset + width;
+          for (let i = 0; i < width; i += 82) {
+            ctx.fillRect(baseX + i, 74, 20, 2);
+            ctx.fillRect(baseX + i + 9, 97, 30, 2);
+          }
+        }
         ctx.globalAlpha = 1;
 
-        ctx.fillStyle = "#0c0c0f";
-        ctx.fillRect(0, groundY, width, height - groundY);
-        ctx.strokeStyle = "#ffffff22";
-        for (let i = 0; i < width; i += 56) {
+        ctx.fillStyle = "#0d1118";
+        ctx.fillRect(-12, groundY, width + 24, height - groundY);
+        ctx.strokeStyle = "#ffffff1f";
+        for (let i = -56; i < width + 56; i += 56) {
+          const x = i + laneOffset;
           ctx.beginPath();
-          ctx.moveTo(i, groundY);
-          ctx.lineTo(i + 34, height);
+          ctx.moveTo(x, groundY);
+          ctx.lineTo(x + 34, height);
           ctx.stroke();
         }
 
+        const warnDist = Math.max(120, w.speed * 0.6);
         w.obstacles.forEach((obs) => {
-          const sx = obs.x - w.heroX + w.heroScreenX;
-          ctx.fillStyle = "#0f0f10";
-          ctx.fillRect(sx, groundY - obs.h, obs.w, obs.h);
-          ctx.fillStyle = "#cb101e";
-          ctx.fillRect(sx + 2, groundY - obs.h + 2, obs.w - 4, obs.h - 4);
-          ctx.fillStyle = "#ffe3e6";
-          ctx.fillRect(sx + 4, groundY - obs.h + 5, Math.max(2, obs.w - 8), 3);
-          ctx.strokeStyle = "#fff";
-          ctx.strokeRect(sx + 1, groundY - obs.h + 1, obs.w - 2, obs.h - 2);
+          const rect = obstacleRect(obs, groundY);
+          const sx = rect.x - w.scrollX + w.heroScreenX;
+          if (sx > width && sx < width + warnDist) {
+            const t = 1 - (sx - width) / warnDist;
+            const warnY = groundY - 11;
+            ctx.globalAlpha = 0.28 + t * 0.55;
+            ctx.fillStyle = obs.kind === "high" ? "#6ec6ff" : "#ff5f67";
+            ctx.beginPath();
+            ctx.moveTo(width - 14, warnY);
+            ctx.lineTo(width - 40, warnY - 10);
+            ctx.lineTo(width - 40, warnY + 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalAlpha = 1;
+          }
         });
 
-        const thiefScreenX = w.thiefX - w.heroX + w.heroScreenX;
-        const thiefTop = groundY - w.thiefH;
-        const thiefBob = Math.max(0, Math.sin((w.runPhase || 0) * 0.95) * 2);
-        ctx.fillStyle = "#121212";
-        ctx.fillRect(thiefScreenX, thiefTop - thiefBob, w.thiefW, w.thiefH);
-        ctx.fillStyle = "#ffd447";
-        ctx.fillRect(thiefScreenX + 4, thiefTop + 6 - thiefBob, w.thiefW - 8, w.thiefH - 12);
-        ctx.fillStyle = "#111";
-        ctx.fillRect(thiefScreenX + 10, thiefTop + 10 - thiefBob, 22, 14);
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(thiefScreenX + 8, thiefTop + 2 - thiefBob, 26, 3);
-        ctx.fillStyle = "#ff3350";
-        ctx.fillRect(thiefScreenX - 18, thiefTop + 9 - thiefBob, 12, 8);
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(thiefScreenX - 20, thiefTop + 7 - thiefBob, 16, 2);
-        ctx.fillStyle = "#111";
-        ctx.fillRect(thiefScreenX + 6 + stride * 4, groundY - 6, 10, 6);
-        ctx.fillRect(thiefScreenX + 24 + stride2 * 4, groundY - 6, 10, 6);
+        w.obstacles.forEach((obs) => {
+          const rect = obstacleRect(obs, groundY);
+          const sx = rect.x - w.scrollX + w.heroScreenX;
+          if (sx < -120 || sx > width + 130) return;
+          if (obs.kind === "high") {
+            ctx.fillStyle = "#0f1721";
+            ctx.fillRect(sx, rect.y, rect.w, rect.h);
+            ctx.fillStyle = "#89d6ff";
+            ctx.fillRect(sx + 3, rect.y + 3, rect.w - 6, rect.h - 6);
+            ctx.fillStyle = "#dbf3ff";
+            ctx.fillRect(sx + 8, rect.y + 7, Math.max(14, rect.w - 16), 3);
+          } else {
+            ctx.fillStyle = "#120e13";
+            ctx.fillRect(sx, rect.y, rect.w, rect.h);
+            ctx.fillStyle = "#ff4c5e";
+            ctx.fillRect(sx + 2, rect.y + 2, rect.w - 4, rect.h - 4);
+            ctx.fillStyle = "#ffe5e7";
+            ctx.fillRect(sx + 5, rect.y + 5, Math.max(6, rect.w - 10), 3);
+          }
+          ctx.strokeStyle = "#ffffffcc";
+          ctx.strokeRect(sx + 1, rect.y + 1, rect.w - 2, rect.h - 2);
+        });
 
-        const heroBob = w.heroY > 0 ? 0 : Math.max(0, Math.sin((w.runPhase || 0) * 1.2) * 2);
-        const heroTop = groundY - w.heroH - w.heroY - heroBob;
-        ctx.fillStyle = "#0f1220";
-        ctx.fillRect(w.heroScreenX, heroTop, w.heroW, w.heroH);
-        ctx.fillStyle = "#37d4ff";
-        ctx.fillRect(w.heroScreenX + 3, heroTop + 3, w.heroW - 6, w.heroH - 6);
-        ctx.fillStyle = "#fff";
-        ctx.fillRect(w.heroScreenX + 10, heroTop + 8, 20, 12);
-        ctx.fillStyle = "#ff2940";
-        ctx.fillRect(w.heroScreenX + 32, heroTop + 14, 12, 26);
-        ctx.fillStyle = "#ffe46b";
-        ctx.fillRect(w.heroScreenX + 35, heroTop + 18, 6, 16);
-        ctx.fillStyle = "#0f1220";
-        ctx.fillRect(w.heroScreenX + 5 + stride * 4, groundY - 6, 10, 6);
-        ctx.fillRect(w.heroScreenX + 23 + stride2 * 4, groundY - 6, 10, 6);
-        ctx.fillRect(w.heroScreenX - 4, heroTop + 16 + stride * 3, 7, 16);
-        ctx.fillRect(w.heroScreenX + w.heroW - 3, heroTop + 16 + stride2 * 3, 7, 16);
+        ctx.fillStyle = "#0e1f2f";
+        ctx.fillRect(heroLeft, heroTop, w.heroW, heroH);
+        ctx.fillStyle = "#34d7ff";
+        ctx.fillRect(heroLeft + 3, heroTop + 3, w.heroW - 6, heroH - 6);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(heroLeft + 11, heroTop + 8, 18, 10);
+        ctx.fillStyle = "#f44562";
+        ctx.fillRect(heroLeft + w.heroW - 12, heroTop + 12, 8, Math.max(10, heroH - 18));
+        ctx.fillStyle = "#0e1f2f";
+        if (w.heroY === 0) {
+          if (w.slideBlend > 0.58) {
+            ctx.fillRect(heroLeft + 6, heroBottom - 5, 14, 5);
+            ctx.fillRect(heroLeft + 24, heroBottom - 5, 14, 5);
+          } else {
+            const stride = Math.sin(state.guitarTime * 18);
+            ctx.fillRect(heroLeft + 5 + stride * 3, groundY - 6, 11, 6);
+            ctx.fillRect(heroLeft + 24 - stride * 3, groundY - 6, 11, 6);
+          }
+        }
 
-        ctx.globalAlpha = 0.32;
-        ctx.fillStyle = "#37d4ff";
-        ctx.fillRect(w.heroScreenX - 26, heroTop + 14, 22, 7);
-        ctx.globalAlpha = 1;
+        if (w.invuln > 0) {
+          ctx.globalAlpha = 0.28 + 0.18 * Math.sin(state.guitarTime * 26);
+          ctx.fillStyle = "#6bd8ff";
+          ctx.fillRect(heroLeft - 4, heroTop - 4, w.heroW + 8, heroH + 8);
+          ctx.globalAlpha = 1;
+        }
+
+        const progress = Math.min(1, state.guitarTime / state.guitarTimeLimit);
+        ctx.fillStyle = "#ffffff24";
+        ctx.fillRect(18, 14, width - 36, 8);
+        ctx.fillStyle = "#58e0a6";
+        ctx.fillRect(18, 14, (width - 36) * progress, 8);
+        ctx.strokeStyle = "#ffffff8d";
+        ctx.strokeRect(18, 14, width - 36, 8);
+
+        if (w.waveBannerAt > 0) {
+          const alpha = Math.min(1, w.waveBannerAt * 1.2);
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = "#0a0a0ad4";
+          ctx.fillRect(width * 0.5 - 130, 36, 260, 42);
+          ctx.strokeStyle = "#ffffffcc";
+          ctx.strokeRect(width * 0.5 - 130, 36, 260, 42);
+          ctx.fillStyle = "#ffde6b";
+          ctx.font = "900 26px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(w.waveBanner, width * 0.5, 66);
+          ctx.globalAlpha = 1;
+        }
+
+        if (w.hitFlash > 0) {
+          ctx.globalAlpha = Math.min(0.32, w.hitFlash * 1.4);
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(-12, 0, width + 24, height);
+          ctx.globalAlpha = 1;
+        }
+        ctx.restore();
+
+        const pulse = Math.max(0, w.streak - 5);
+        ctx.save();
+        ctx.globalAlpha = Math.min(0.32, pulse * 0.025);
+        ctx.fillStyle = "#73ffc8";
+        ctx.fillRect(0, height - 74, width, 22);
+        ctx.restore();
       }
 
-      function endGuitarGame(caught) {
+      function endGuitarGame(cleared) {
         const t = state.guitarTime;
-        let rank = 1;
-        if (caught) {
-          rank = rankBySeconds(t);
-        }
+        const w = state.guitarWorld;
+        const rank = cleared ? liveRankNow(t, w ? w.hp : 1) : 1;
         applyGuitarRank(rank, t);
         state.members.guitar = true;
         updateHud();
         stopGuitarGame();
-        if (caught) {
-          sceneData.gSuccess.text = `...${t.toFixed(1)}秒で追いついたの！？ その本気、信じる。私も弾く。`;
+        if (cleared) {
+          sceneData.gSuccess.text = `...${t.toFixed(1)}秒を耐え切ったの！？ 度胸、見直した。私も本気で弾く。`;
         } else {
-          sceneData.gSuccess.text = "捕まえきれなかったけど、追ってくれた気持ちは伝わった。私も弾く。";
+          sceneData.gSuccess.text = "最後まで耐えきれなかったけど、守ろうとしてくれたのは伝わった。私も弾く。";
         }
         goScene("gSuccess");
+      }
+
+      function spawnObstacle() {
+        const w = state.guitarWorld;
+        const phase = state.guitarTime < 15 ? 1 : state.guitarTime < 30 ? 2 : 3;
+        const kindRoll = Math.random();
+        let kind = kindRoll < (phase === 1 ? 0.25 : phase === 2 ? 0.42 : 0.5) ? "high" : "low";
+        if (phase === 1 && w.obstacles.length > 0 && w.obstacles[w.obstacles.length - 1].kind === "high") {
+          kind = "low";
+        }
+        const obs = {
+          kind,
+          x: w.scrollX + 900 + Math.random() * 220,
+          w: kind === "high" ? 76 + Math.random() * 26 : 24 + Math.random() * 18,
+          h: kind === "high" ? 22 : 22 + Math.random() * 16,
+          scoredNear: false,
+          scoredClear: false
+        };
+        w.obstacles.push(obs);
+        const minGap = phase === 1 ? 1.08 : phase === 2 ? 0.84 : 0.68;
+        const maxGap = phase === 1 ? 1.44 : phase === 2 ? 1.16 : 0.96;
+        w.spawnIn = minGap + Math.random() * (maxGap - minGap);
       }
 
       function guitarTick(now) {
         if (!state.guitarGameRunning || !state.guitarWorld) return;
         if (!state.guitarLastTick) state.guitarLastTick = now;
-        const dt = Math.max(0.001, (now - state.guitarLastTick) / 1000);
+        const rawDt = Math.max(0.001, (now - state.guitarLastTick) / 1000);
         state.guitarLastTick = now;
+        const w = state.guitarWorld;
+
+        w.slowMo = Math.max(0, w.slowMo - rawDt);
+        w.invuln = Math.max(0, w.invuln - rawDt);
+        w.hitFlash = Math.max(0, w.hitFlash - rawDt);
+        w.screenShake = Math.max(0, w.screenShake - rawDt);
+        w.waveBannerAt = Math.max(0, w.waveBannerAt - rawDt);
+        const dt = rawDt * (w.slowMo > 0 ? 0.38 : 1);
         state.guitarTime += dt;
 
-        const w = state.guitarWorld;
-        w.obstacleAcc += dt;
-        if (w.obstacleAcc >= 1.45) {
-          w.obstacleAcc = 0;
-          w.obstacles.push({
-            x: w.heroX + 860 + Math.random() * 260,
-            w: 18 + Math.random() * 16,
-            h: 18 + Math.random() * 22
-          });
+        const phase = state.guitarTime < 15 ? 1 : state.guitarTime < 30 ? 2 : 3;
+        if (phase !== w.wave) {
+          w.wave = phase;
+          w.waveBanner = `WAVE ${phase}`;
+          w.waveBannerAt = 1.6;
         }
+
+        const speedTarget = 236 + phase * 34 + Math.min(72, state.guitarTime * 1.08);
+        w.speed += (speedTarget - w.speed) * Math.min(1, dt * 2);
+        w.scrollX += w.speed * dt;
 
         if (w.heroY > 0 || w.heroVy > 0) {
           w.heroY += w.heroVy * dt;
@@ -157,44 +308,64 @@
           }
         }
 
-        const speedScale = w.hitLock > 0 ? 0.45 : 1;
-        w.heroX += w.heroSpeed * dt * speedScale;
-        w.thiefX += w.thiefSpeed * dt;
-        w.hitLock = Math.max(0, w.hitLock - dt);
-        w.runPhase += dt * 14 * speedScale;
+        const slideTarget = w.slideHold && w.heroY === 0 ? 1 : 0;
+        w.slideBlend += (slideTarget - w.slideBlend) * Math.min(1, dt * 14);
 
-        const heroTop = 360 - 40 - w.heroH - w.heroY;
-        const heroBottom = heroTop + w.heroH;
+        w.spawnIn -= dt;
+        if (w.spawnIn <= 0) {
+          spawnObstacle();
+        }
+
+        const groundY = 360 - 40;
+        const heroH = getHeroHeight(w);
+        const heroTop = groundY - heroH - w.heroY;
+        const heroBottom = heroTop + heroH;
         const heroLeft = w.heroScreenX;
         const heroRight = heroLeft + w.heroW;
 
         w.obstacles = w.obstacles.filter((obs) => {
-          const sx = obs.x - w.heroX + w.heroScreenX;
-          const oLeft = sx;
-          const oRight = sx + obs.w;
-          const oTop = 360 - 40 - obs.h;
-          const oBottom = 360 - 40;
+          const rect = obstacleRect(obs, groundY);
+          const oLeft = rect.x - w.scrollX + w.heroScreenX;
+          const oRight = oLeft + rect.w;
+          const oTop = rect.y;
+          const oBottom = rect.y + rect.h;
           const hit = heroRight > oLeft && heroLeft < oRight && heroBottom > oTop && heroTop < oBottom;
-          if (hit) {
-            w.hitLock = 0.35;
+          if (hit && w.invuln <= 0) {
+            w.hp -= 1;
+            w.invuln = 0.9;
+            w.hitFlash = 0.26;
+            w.screenShake = 0.3;
+            w.slowMo = 0.08;
+            w.streak = 0;
             return false;
           }
-          return sx > -80;
+
+          if (!obs.scoredClear && oRight < heroLeft) {
+            const verticalClear = Math.min(Math.abs(heroBottom - oTop), Math.abs(oBottom - heroTop));
+            if (!obs.scoredNear && verticalClear <= 20) {
+              obs.scoredNear = true;
+              w.nearMiss += 1;
+            }
+            obs.scoredClear = true;
+            w.streak += 1;
+            w.bestStreak = Math.max(w.bestStreak, w.streak);
+          }
+          return oRight > -120;
         });
 
-        const distance = w.thiefX - w.heroX;
         const ctx = el.guitarCanvas.getContext("2d");
         drawGuitarGame(ctx, el.guitarCanvas.width, el.guitarCanvas.height);
-        el.guitarTimer.textContent = `TIME: ${state.guitarTime.toFixed(1)}`;
-        const liveRank = rankBySeconds(state.guitarTime);
-        el.guitarBest.textContent = `RANK NOW: ${liveRank === 3 ? "S" : liveRank === 2 ? "A" : "B"}`;
+        const nowRank = liveRankNow(state.guitarTime, w.hp);
+        el.guitarTimer.textContent = `TIME: ${state.guitarTime.toFixed(1)} / ${state.guitarTimeLimit.toFixed(0)}`;
+        el.guitarBest.textContent = `HP: ${Math.max(0, w.hp)}`;
+        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / NEAR ${w.nearMiss}`;
 
-        if (distance <= 70) {
-          endGuitarGame(true);
+        if (w.hp <= 0) {
+          endGuitarGame(false);
           return;
         }
         if (state.guitarTime >= state.guitarTimeLimit) {
-          endGuitarGame(false);
+          endGuitarGame(true);
           return;
         }
         state.guitarLoopId = requestAnimationFrame(guitarTick);
@@ -206,9 +377,9 @@
         state.guitarTime = 0;
         state.guitarLastTick = 0;
         resetGuitarWorld();
-        el.guitarTimer.textContent = "TIME: 0.0";
-        el.guitarBest.textContent = "RANK: -";
-        el.guitarHint.textContent = "S:16.0秒以内 / A:28.0秒以内 / B:40.0秒以内";
+        el.guitarTimer.textContent = `TIME: 0.0 / ${state.guitarTimeLimit.toFixed(0)}`;
+        el.guitarBest.textContent = "HP: 3";
+        el.guitarHint.textContent = "45秒生存でCLEAR / Space: JUMP / ↓: SLIDE";
         el.guitarStartBtn.style.display = "block";
         el.app.classList.add("guitar-mode");
         el.guitarGameLayer.classList.add("active");
@@ -225,13 +396,16 @@
         state.guitarLastTick = 0;
         resetGuitarWorld();
         el.guitarStartBtn.style.display = "none";
-        el.guitarHint.textContent = "追跡中... Space / タップでジャンプ / S:16.0 A:28.0 B:40.0";
+        el.guitarHint.textContent = "耐久開始... SpaceでJUMP / ↓(S)でSLIDE";
         state.guitarLoopId = requestAnimationFrame(guitarTick);
       }
 
       function stopGuitarGame() {
         state.guitarGameActive = false;
         state.guitarGameRunning = false;
+        if (state.guitarWorld) {
+          state.guitarWorld.slideHold = false;
+        }
         if (state.guitarLoopId) {
           cancelAnimationFrame(state.guitarLoopId);
           state.guitarLoopId = 0;

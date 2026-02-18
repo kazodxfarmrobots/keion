@@ -98,13 +98,14 @@
         <div class="guitargame-layer" id="guitarGameLayer">
           <div class="chase-head">
             <div class="live-chip" id="guitarTimer">TIME: 0.0</div>
-            <div class="live-chip" id="guitarBest">RANK: -</div>
-            <div class="live-chip" id="guitarHint">S:16.0秒以内 / A:28.0秒以内 / B:40.0秒以内</div>
+            <div class="live-chip" id="guitarBest">HP: 3</div>
+            <div class="live-chip" id="guitarHint">45秒生存でCLEAR / Space: JUMP / ↓: SLIDE</div>
           </div>
           <canvas id="guitarCanvas" class="chase-canvas" width="960" height="360"></canvas>
           <div class="chase-actions">
             <button class="choice-btn" id="guitarJumpBtn">JUMP</button>
-            <button class="choice-btn" id="guitarStartBtn">CHASE START</button>
+            <button class="choice-btn" id="guitarSlideBtn">SLIDE</button>
+            <button class="choice-btn" id="guitarStartBtn">SURVIVAL START</button>
             <button class="choice-btn" id="guitarAudioBtn" data-audio-toggle>BGM: OFF</button>
           </div>
         </div>
@@ -123,7 +124,7 @@
     <div id="howtoPanel" class="howto" role="dialog" aria-modal="true">
       <h2>HOW TO PLAY</h2>
       <p>軽音楽部の仲間を3人そろえて、学園祭ステージを成功させよう。</p>
-      <p>テキストはクリック/タップ/Enterで進行。ギター勧誘は2D追跡ミニゲーム。</p>
+      <p>テキストはクリック/タップ/Enterで進行。ギター勧誘は2Dサバイバル回避ミニゲーム。</p>
       <p>学園祭の演奏ではミニゲーム発生。赤い声は押して弾く、緑の声は押さずに流す。</p>
       <p>演奏開始前に3曲からBGMを選択。上から下へ流れ、下に到達した時点で判定。</p>
       <p>最終結果は演奏スコアで判定。TARGET以上ならBEST END。</p>
