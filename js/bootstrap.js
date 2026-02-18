@@ -14,7 +14,12 @@
         el.backTitleBtn.addEventListener("click", () => switchScreen("title"));
         el.liveStartBtn.addEventListener("click", startLiveRound);
         el.liveFeverBtn.addEventListener("click", activateLiveFever);
-        el.guitarStartBtn.addEventListener("click", startGuitarGame);
+        if (el.guitarStartBtn) {
+          el.guitarStartBtn.addEventListener("click", startGuitarGame);
+        }
+        if (el.guitarBriefStart) {
+          el.guitarBriefStart.addEventListener("click", startGuitarGame);
+        }
         el.guitarJumpBtn.addEventListener("pointerdown", (e) => {
           e.preventDefault();
           guitarStartJumpCharge();
@@ -45,6 +50,10 @@
             guitarReleaseJump();
           });
         });
+        el.guitarShootBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          guitarShoot();
+        });
 
         el.closeHowto.addEventListener("click", () => showHowto(false));
         el.howtoPanel.addEventListener("click", (e) => {
@@ -72,14 +81,24 @@
             }
           } else if (el.gameScreen.classList.contains("active")) {
             if (state.guitarGameActive) {
-              if (e.key === " " || e.key === "ArrowUp") {
+              if (!state.guitarGameRunning && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                startGuitarGame();
+                return;
+              }
+              if (e.key === "ArrowUp") {
                 e.preventDefault();
                 if (!e.repeat) guitarStartJumpCharge();
                 return;
               }
-              if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
+              if (e.key === "ArrowDown") {
                 e.preventDefault();
                 guitarSlide(true);
+                return;
+              }
+              if (e.key.toLowerCase() === "z") {
+                e.preventDefault();
+                if (!e.repeat) guitarShoot();
                 return;
               }
               return;
@@ -92,11 +111,11 @@
         });
         window.addEventListener("keyup", (e) => {
           if (!state.guitarGameActive) return;
-          if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
+          if (e.key === "ArrowDown") {
             e.preventDefault();
             guitarSlide(false);
           }
-          if (e.key === " " || e.key === "ArrowUp") {
+          if (e.key === "ArrowUp") {
             e.preventDefault();
             guitarReleaseJump();
           }
@@ -119,3 +138,4 @@
       updateHud();
       updateStatusPanel();
       setBackground("classroom", { instant: true });
+

@@ -47,7 +47,31 @@
       }
 
       .chase-actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .guitar-brief {
+        inset: 52px 10px 58px;
+        padding: 12px 12px 10px;
+      }
+
+      .guitar-brief-title {
+        margin-bottom: 9px;
+      }
+
+      .guitar-brief-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 9px;
+      }
+
+      .guitar-brief-card {
+        min-height: 0;
+      }
+
+      .guitar-brief-start {
+        min-width: 0;
+        width: 100%;
       }
 
       .top-ui {
@@ -220,7 +244,40 @@
       .chase-actions {
         gap: 5px;
         margin-top: 5px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .guitar-brief {
+        inset: 30px 8px 44px;
+        padding: 9px 10px 8px;
+      }
+
+      .guitar-brief-kicker {
+        margin-bottom: 5px;
+        font-size: 9px;
+      }
+
+      .guitar-brief-title {
+        font-size: 0.82rem;
+        margin-bottom: 6px;
+      }
+
+      .guitar-brief-grid {
+        gap: 5px;
+        margin-bottom: 6px;
+      }
+
+      .guitar-brief-card {
+        padding: 7px 8px 6px;
+      }
+
+      .guitar-brief-card p {
+        font-size: 10px;
+      }
+
+      .guitar-brief-start {
+        padding: 6px 10px;
+        font-size: 0.68rem;
       }
 
       .textbox-wrap {
@@ -298,3 +355,4 @@
         bottom: auto;
       }
     }
+

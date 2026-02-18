@@ -1,4 +1,4 @@
-    .guitargame-layer {
+﻿    .guitargame-layer {
       position: absolute;
       left: 12px;
       right: 12px;
@@ -63,6 +63,137 @@
       margin-top: 8px;
     }
 
+    .guitar-brief {
+      position: absolute;
+      inset: 56px 18px 62px;
+      z-index: 6;
+      display: none;
+      color: #f9fbff;
+      padding: 18px 18px 14px;
+      clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+      background:
+        linear-gradient(122deg, #ef174f 0 14%, transparent 14% 100%),
+        linear-gradient(165deg, #06090df2 0%, #0d1119f4 52%, #131722f4 100%);
+      border: 2px solid #f2f6ffcc;
+      box-shadow: 0 0 0 2px #09111d inset, 0 14px 34px #0000006f;
+      overflow: hidden;
+    }
+
+    .guitar-brief.show {
+      display: block;
+      animation: briefEnter 340ms cubic-bezier(0.18, 0.88, 0.32, 1);
+    }
+
+    .guitar-brief::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(-24deg, #ffffff14 0 2px, transparent 2px 22px),
+        linear-gradient(90deg, transparent 0 56%, #ff5b7b22 56% 100%);
+      opacity: 0.58;
+    }
+
+    .guitar-brief-deco {
+      position: absolute;
+      right: -46px;
+      top: 8px;
+      width: 182px;
+      height: 28px;
+      transform: rotate(-18deg);
+      background: linear-gradient(90deg, #ffd247 0%, #ff5a77 100%);
+      box-shadow: 0 0 0 2px #00000066;
+      opacity: 0.92;
+    }
+
+    .guitar-brief-kicker {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      padding: 2px 8px;
+      margin-bottom: 8px;
+      background: #ffffff;
+      color: #090b12;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .guitar-brief-title {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 12px;
+      color: #ffffff;
+      font-size: clamp(1.06rem, 2.2vw, 1.48rem);
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 #000, 2px 2px 0 #e11c4e;
+    }
+
+    .guitar-brief-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .guitar-brief-card {
+      background: linear-gradient(180deg, #ffffff17 0%, #ffffff08 100%);
+      border: 1px solid #ffffff55;
+      padding: 10px 10px 9px;
+      min-height: 90px;
+      clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+    }
+
+    .guitar-brief-label {
+      margin-bottom: 6px;
+      color: #ffd54a;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 0 #000, 0 0 8px #ffcf4a4a;
+    }
+
+    .guitar-brief-card p {
+      margin: 0;
+      color: #f2f8ff;
+      line-height: 1.45;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .guitar-brief-start {
+      position: relative;
+      z-index: 1;
+      display: block;
+      min-width: 210px;
+      margin: 0 auto;
+      background: linear-gradient(90deg, #ff2f63 0%, #ff5d41 100%);
+      color: #ffffff;
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #0000005c;
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      transform: skew(-8deg);
+    }
+
+    .guitar-brief-start:hover {
+      filter: brightness(1.08) saturate(1.1);
+      transform: skew(-8deg) translateY(-1px);
+    }
+
+    @keyframes briefEnter {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     @keyframes shakeScene {
       0% { transform: translateX(0); }
       20% { transform: translateX(-8px); }
@@ -94,3 +225,4 @@
     }
 
     .howto p { margin: 8px 0; line-height: 1.6; }
+

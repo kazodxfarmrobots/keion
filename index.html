@@ -99,13 +99,33 @@
           <div class="chase-head">
             <div class="live-chip" id="guitarTimer">TIME: 0.0</div>
             <div class="live-chip" id="guitarBest">HP: 10</div>
-            <div class="live-chip" id="guitarHint">45秒生存でCLEAR / Space: JUMP / ↓: SLIDE</div>
+            <div class="live-chip" id="guitarHint">85秒生存でCLEAR / ↑長押しでジャンプ溜め / ↓でしゃがみ</div>
+          </div>
+          <div class="guitar-brief" id="guitarBrief">
+            <div class="guitar-brief-deco"></div>
+            <div class="guitar-brief-kicker">PHANTOM OPERATION</div>
+            <h2 class="guitar-brief-title">GUITAR SURVIVAL BRIEFING</h2>
+            <div class="guitar-brief-grid">
+              <div class="guitar-brief-card">
+                <div class="guitar-brief-label">MISSION</div>
+                <p>85秒を生存。HPを守りつつ、回復アイテムを拾って持久戦を制する。</p>
+              </div>
+              <div class="guitar-brief-card">
+                <div class="guitar-brief-label">CONTROLS</div>
+                <p>↑: 長押しジャンプ / ↓: しゃがみ / Z: 射撃（破壊障害物・ドローン）</p>
+              </div>
+              <div class="guitar-brief-card">
+                <div class="guitar-brief-label">ATTENTION</div>
+                <p>カウントダウン後に突進するドローン、複数ヒットが必要な破壊障害物に注意。</p>
+              </div>
+            </div>
+            <button class="choice-btn guitar-brief-start" id="guitarBriefStart">MISSION START</button>
           </div>
           <canvas id="guitarCanvas" class="chase-canvas" width="960" height="360"></canvas>
           <div class="chase-actions">
-            <button class="choice-btn" id="guitarJumpBtn">JUMP</button>
-            <button class="choice-btn" id="guitarSlideBtn">SLIDE</button>
-            <button class="choice-btn" id="guitarStartBtn">SURVIVAL START</button>
+            <button class="choice-btn" id="guitarJumpBtn">JUMP ↑</button>
+            <button class="choice-btn" id="guitarSlideBtn">DOWN ↓</button>
+            <button class="choice-btn" id="guitarShootBtn">SHOOT Z</button>
             <button class="choice-btn" id="guitarAudioBtn" data-audio-toggle>BGM: OFF</button>
           </div>
         </div>
@@ -143,4 +163,6 @@
   <script src="js/bootstrap.js"></script>
 </body>
 </html>
+
+
 

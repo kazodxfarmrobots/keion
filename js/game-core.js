@@ -52,6 +52,9 @@
         guitarStartBtn: document.getElementById("guitarStartBtn"),
         guitarJumpBtn: document.getElementById("guitarJumpBtn"),
         guitarSlideBtn: document.getElementById("guitarSlideBtn"),
+        guitarShootBtn: document.getElementById("guitarShootBtn"),
+        guitarBrief: document.getElementById("guitarBrief"),
+        guitarBriefStart: document.getElementById("guitarBriefStart"),
         guitarTimer: document.getElementById("guitarTimer"),
         guitarBest: document.getElementById("guitarBest"),
         guitarHint: document.getElementById("guitarHint")
@@ -125,7 +128,7 @@
         guitarLoopId: 0,
         guitarRank: 1,
         guitarTime: 0,
-        guitarTimeLimit: 45,
+        guitarTimeLimit: 85,
         guitarLastTick: 0,
         guitarWorld: null
       };
@@ -229,4 +232,5 @@
         if (sec >= 22) return 2;
         return 1;
       }
+
 
