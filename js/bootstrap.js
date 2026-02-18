@@ -15,10 +15,12 @@
         el.liveStartBtn.addEventListener("click", startLiveRound);
         el.liveFeverBtn.addEventListener("click", activateLiveFever);
         el.guitarStartBtn.addEventListener("click", startGuitarGame);
+        el.guitarJumpDownBtn.addEventListener("click", () => guitarAdjustJump(-0.1));
         el.guitarJumpBtn.addEventListener("pointerdown", (e) => {
           e.preventDefault();
           guitarJump();
         });
+        el.guitarJumpUpBtn.addEventListener("click", () => guitarAdjustJump(0.1));
         el.guitarSlideBtn.addEventListener("pointerdown", (e) => {
           e.preventDefault();
           guitarSlide(true);
@@ -68,6 +70,16 @@
               if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
                 e.preventDefault();
                 guitarSlide(true);
+                return;
+              }
+              if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
+                e.preventDefault();
+                guitarAdjustJump(-0.1);
+                return;
+              }
+              if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
+                e.preventDefault();
+                guitarAdjustJump(0.1);
               }
               return;
             }

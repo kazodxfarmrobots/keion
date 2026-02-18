@@ -8,6 +8,7 @@
           heroScreenX: 150,
           gravity: 1380,
           jumpV: 540,
+          jumpScale: 1,
           slideHold: false,
           slideBlend: 0,
           groundY: 320,
@@ -37,8 +38,16 @@
         if (!state.guitarGameRunning || !state.guitarWorld) return;
         const w = state.guitarWorld;
         if (w.heroY === 0) {
-          w.heroVy = w.jumpV;
+          w.heroVy = w.jumpV * w.jumpScale;
         }
+      }
+
+      function guitarAdjustJump(delta) {
+        if (!state.guitarWorld) return;
+        const w = state.guitarWorld;
+        w.jumpScale = Math.max(0.7, Math.min(1.4, +(w.jumpScale + delta).toFixed(2)));
+        const pct = Math.round(w.jumpScale * 100);
+        el.guitarHint.textContent = `RANK NOW: ${rankLabel(liveRankNow(state.guitarTime, w.hp))} / STREAK x${w.streak} / JUMP ${pct}%`;
       }
 
       function guitarSlide(active) {
@@ -358,7 +367,7 @@
         const nowRank = liveRankNow(state.guitarTime, w.hp);
         el.guitarTimer.textContent = `TIME: ${state.guitarTime.toFixed(1)} / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = `HP: ${Math.max(0, w.hp)}`;
-        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / NEAR ${w.nearMiss}`;
+        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / JUMP ${Math.round(w.jumpScale * 100)}%`;
 
         if (w.hp <= 0) {
           endGuitarGame(false);
@@ -379,7 +388,7 @@
         resetGuitarWorld();
         el.guitarTimer.textContent = `TIME: 0.0 / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = "HP: 3";
-        el.guitarHint.textContent = "45秒生存でCLEAR / Space: JUMP / ↓: SLIDE";
+        el.guitarHint.textContent = "45秒生存でCLEAR / Space: JUMP / ↓: SLIDE / ←→: JUMP調整";
         el.guitarStartBtn.style.display = "block";
         el.app.classList.add("guitar-mode");
         el.guitarGameLayer.classList.add("active");
@@ -396,7 +405,7 @@
         state.guitarLastTick = 0;
         resetGuitarWorld();
         el.guitarStartBtn.style.display = "none";
-        el.guitarHint.textContent = "耐久開始... SpaceでJUMP / ↓(S)でSLIDE";
+        el.guitarHint.textContent = "耐久開始... SpaceでJUMP / ↓(S)でSLIDE / ←→でJUMP調整";
         state.guitarLoopId = requestAnimationFrame(guitarTick);
       }
 
