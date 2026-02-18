@@ -15,12 +15,16 @@
         el.liveStartBtn.addEventListener("click", startLiveRound);
         el.liveFeverBtn.addEventListener("click", activateLiveFever);
         el.guitarStartBtn.addEventListener("click", startGuitarGame);
-        el.guitarJumpDownBtn.addEventListener("click", () => guitarAdjustJump(-0.1));
         el.guitarJumpBtn.addEventListener("pointerdown", (e) => {
           e.preventDefault();
-          guitarJump();
+          guitarStartJumpCharge();
         });
-        el.guitarJumpUpBtn.addEventListener("click", () => guitarAdjustJump(0.1));
+        ["pointerup", "pointerleave", "pointercancel"].forEach((evt) => {
+          el.guitarJumpBtn.addEventListener(evt, (e) => {
+            e.preventDefault();
+            guitarReleaseJump();
+          });
+        });
         el.guitarSlideBtn.addEventListener("pointerdown", (e) => {
           e.preventDefault();
           guitarSlide(true);
@@ -33,7 +37,13 @@
         });
         el.guitarCanvas.addEventListener("pointerdown", (e) => {
           e.preventDefault();
-          guitarJump();
+          guitarStartJumpCharge();
+        });
+        ["pointerup", "pointerleave", "pointercancel"].forEach((evt) => {
+          el.guitarCanvas.addEventListener(evt, (e) => {
+            e.preventDefault();
+            guitarReleaseJump();
+          });
         });
 
         el.closeHowto.addEventListener("click", () => showHowto(false));
@@ -64,22 +74,13 @@
             if (state.guitarGameActive) {
               if (e.key === " " || e.key === "ArrowUp") {
                 e.preventDefault();
-                guitarJump();
+                if (!e.repeat) guitarStartJumpCharge();
                 return;
               }
               if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
                 e.preventDefault();
                 guitarSlide(true);
                 return;
-              }
-              if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
-                e.preventDefault();
-                guitarAdjustJump(-0.1);
-                return;
-              }
-              if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
-                e.preventDefault();
-                guitarAdjustJump(0.1);
               }
               return;
             }
@@ -94,6 +95,10 @@
           if (e.key === "ArrowDown" || e.key.toLowerCase() === "s") {
             e.preventDefault();
             guitarSlide(false);
+          }
+          if (e.key === " " || e.key === "ArrowUp") {
+            e.preventDefault();
+            guitarReleaseJump();
           }
         });
 

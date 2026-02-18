@@ -8,7 +8,10 @@
           heroScreenX: 150,
           gravity: 1380,
           jumpV: 540,
-          jumpScale: 1,
+          jumpScale: 0.72,
+          jumpChargeHold: false,
+          jumpChargeSec: 0,
+          jumpChargeMaxSec: 0.5,
           slideHold: false,
           slideBlend: 0,
           groundY: 320,
@@ -34,20 +37,24 @@
         return w.heroStandH - (w.heroStandH - w.heroSlideH) * w.slideBlend;
       }
 
-      function guitarJump() {
+      function guitarStartJumpCharge() {
         if (!state.guitarGameRunning || !state.guitarWorld) return;
         const w = state.guitarWorld;
-        if (w.heroY === 0) {
-          w.heroVy = w.jumpV * w.jumpScale;
-        }
+        if (w.heroY !== 0) return;
+        w.jumpChargeHold = true;
       }
 
-      function guitarAdjustJump(delta) {
+      function guitarReleaseJump() {
+        if (!state.guitarGameRunning || !state.guitarWorld) return;
         if (!state.guitarWorld) return;
         const w = state.guitarWorld;
-        w.jumpScale = Math.max(0.7, Math.min(1.4, +(w.jumpScale + delta).toFixed(2)));
-        const pct = Math.round(w.jumpScale * 100);
-        el.guitarHint.textContent = `RANK NOW: ${rankLabel(liveRankNow(state.guitarTime, w.hp))} / STREAK x${w.streak} / JUMP ${pct}%`;
+        if (!w.jumpChargeHold) return;
+        w.jumpChargeHold = false;
+        if (w.heroY !== 0) return;
+        const ratio = Math.min(1, w.jumpChargeSec / w.jumpChargeMaxSec);
+        w.jumpScale = 0.72 + ratio * (1.42 - 0.72);
+        w.heroVy = w.jumpV * w.jumpScale;
+        w.jumpChargeSec = 0;
       }
 
       function guitarSlide(active) {
@@ -214,6 +221,14 @@
         ctx.strokeStyle = "#ffffff8d";
         ctx.strokeRect(18, 14, width - 36, 8);
 
+        const chargeRatio = Math.min(1, w.jumpChargeSec / w.jumpChargeMaxSec);
+        ctx.fillStyle = "#ffffff1e";
+        ctx.fillRect(18, 28, 180, 6);
+        ctx.fillStyle = "#65beff";
+        ctx.fillRect(18, 28, 180 * chargeRatio, 6);
+        ctx.strokeStyle = "#ffffff8d";
+        ctx.strokeRect(18, 28, 180, 6);
+
         if (w.waveBannerAt > 0) {
           const alpha = Math.min(1, w.waveBannerAt * 1.2);
           ctx.globalAlpha = alpha;
@@ -317,6 +332,19 @@
           }
         }
 
+        if (w.heroY !== 0) {
+          w.jumpChargeHold = false;
+          w.jumpChargeSec = 0;
+          w.jumpScale = 0.72;
+        } else if (w.jumpChargeHold) {
+          w.jumpChargeSec = Math.min(w.jumpChargeMaxSec, w.jumpChargeSec + rawDt);
+          const ratio = Math.min(1, w.jumpChargeSec / w.jumpChargeMaxSec);
+          w.jumpScale = 0.72 + ratio * (1.42 - 0.72);
+        } else {
+          w.jumpChargeSec = 0;
+          w.jumpScale = 0.72;
+        }
+
         const slideTarget = w.slideHold && w.heroY === 0 ? 1 : 0;
         w.slideBlend += (slideTarget - w.slideBlend) * Math.min(1, dt * 14);
 
@@ -367,7 +395,7 @@
         const nowRank = liveRankNow(state.guitarTime, w.hp);
         el.guitarTimer.textContent = `TIME: ${state.guitarTime.toFixed(1)} / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = `HP: ${Math.max(0, w.hp)}`;
-        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / JUMP ${Math.round(w.jumpScale * 100)}%`;
+        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / JUMP ${Math.round(w.jumpScale * 100)}% (長押し)`;
 
         if (w.hp <= 0) {
           endGuitarGame(false);
@@ -388,7 +416,7 @@
         resetGuitarWorld();
         el.guitarTimer.textContent = `TIME: 0.0 / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = "HP: 3";
-        el.guitarHint.textContent = "45秒生存でCLEAR / Space: JUMP / ↓: SLIDE / ←→: JUMP調整";
+        el.guitarHint.textContent = "45秒生存でCLEAR / JUMP長押しで高さ調整 / ↓: SLIDE";
         el.guitarStartBtn.style.display = "block";
         el.app.classList.add("guitar-mode");
         el.guitarGameLayer.classList.add("active");
@@ -405,7 +433,7 @@
         state.guitarLastTick = 0;
         resetGuitarWorld();
         el.guitarStartBtn.style.display = "none";
-        el.guitarHint.textContent = "耐久開始... SpaceでJUMP / ↓(S)でSLIDE / ←→でJUMP調整";
+        el.guitarHint.textContent = "耐久開始... JUMP長押しで高さ調整 / ↓(S)でSLIDE";
         state.guitarLoopId = requestAnimationFrame(guitarTick);
       }
 
