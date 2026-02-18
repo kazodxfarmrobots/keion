@@ -1,0 +1,145 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KEION LINK - School Festival Story</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/live-game.css" />
+  <link rel="stylesheet" href="css/guitar-and-modal.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+  <div id="app">
+    <section id="titleScreen" class="screen active" aria-label="title">
+      <div class="title-wrap">
+        <div>
+          <div class="title-main">
+            KEION<br />
+            <span class="accent">LINK</span>
+          </div>
+          <div class="title-sub">Gather Your Bandmates. Own The Festival.</div>
+          <div class="slash"></div>
+        </div>
+        <div class="menu-panel">
+          <ul class="menu-list" id="titleMenu">
+            <li><button class="menu-item selected" data-action="start">START STORY</button></li>
+            <li><button class="menu-item" data-action="howto">HOW TO PLAY</button></li>
+            <li><button class="menu-item" data-action="audio" data-audio-toggle>BGM: OFF</button></li>
+          </ul>
+          <div class="hint">Click/Tap or Enter: 決定 / ↑↓: 選択</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen" aria-label="game">
+      <div class="scene" id="sceneRoot">
+        <div class="bg-layer" id="bgA"></div>
+        <div class="bg-layer" id="bgB" style="opacity:0"></div>
+        <div class="bg-overlay"></div>
+        <div class="wipe" id="wipe"></div>
+
+        <div class="top-ui">
+          <button class="mini-btn" id="audioBtn" data-audio-toggle>BGM: OFF</button>
+          <button class="mini-btn" id="backTitleBtn">TITLE</button>
+        </div>
+
+        <div class="stage-hud" id="hud">メンバー: <span id="gState">Guitar</span> / <span id="bState">Bass</span> / <span id="dState">Drum</span></div>
+        <div class="status-panel" id="statusPanel">
+          <div class="status-title">メンバーステータス</div>
+          <div class="status-row"><span>GUITAR</span><span class="status-stars" id="guitarStars">---</span></div>
+          <div class="status-row"><span>BASS</span><span class="status-stars" id="bassStars">---</span></div>
+          <div class="status-row"><span>DRUM</span><span class="status-stars" id="drumStars">---</span></div>
+        </div>
+
+        <div class="cast-layer">
+          <img id="charaLeft" class="chara left" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="left character" />
+          <img id="charaRight" class="chara right" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="right character" />
+        </div>
+
+        <div class="livegame-layer" id="liveGameLayer">
+          <div class="live-head">
+            <div class="live-chip" id="liveTimer">TIME: 18.0</div>
+            <div class="live-chip" id="liveFeverStatus">FEVER: LOCK</div>
+          </div>
+          <div class="mood-wrap">
+            <div class="mood-label">SCORE</div>
+            <div class="mood-bar score-bar"><div class="mood-fill" id="liveScoreFill"></div></div>
+            <div class="live-chip combo-chip" id="liveCombo">COMBO x0</div>
+          </div>
+          <div class="live-note" id="liveNote">上から下へ流れる。赤はタップで消す、緑は触らず流す。下到達で判定。赤タップは少し＋、緑タップはマイナス。</div>
+          <div class="live-controls">
+            <select id="liveMusicSelect" class="live-select" aria-label="演奏BGMを選択">
+              <option value="track1">スターチェンジ</option>
+              <option value="track2">黒い幕が上がる夜</option>
+              <option value="track3">命火のレクイエム</option>
+            </select>
+            <button class="choice-btn live-start" id="liveStartBtn">演奏開始</button>
+            <button class="choice-btn live-start" id="liveFeverBtn">FULL STAR</button>
+            <button class="choice-btn live-start" id="liveAudioBtn" data-audio-toggle>BGM: OFF</button>
+          </div>
+          <div class="live-field" id="liveField">
+            <div class="live-cutin" id="liveCutin">
+              <img id="liveCutinImg" class="live-cutin-img" src="images/human/主人公.png" alt="cutin" />
+              <div id="liveCutinText" class="live-cutin-text">ここからだ、行くぞ！</div>
+            </div>
+            <div class="combo-burst" id="liveComboBurst" aria-hidden="true">
+              <div class="combo-burst-main" id="liveComboBurstMain">10 COMBO!</div>
+            </div>
+          </div>
+          <div class="live-cast-lane" id="liveCastLane">
+            <img id="liveCast1" class="live-cast" src="images/mini_human/主人公.png" alt="mini cast 1" />
+            <img id="liveCast2" class="live-cast" src="images/mini_human/ヒロイン1.png" alt="mini cast 2" />
+            <img id="liveCast3" class="live-cast" src="images/mini_human/ヒロイン2.png" alt="mini cast 3" />
+            <img id="liveCast4" class="live-cast" src="images/mini_human/ヒロイン3.png" alt="mini cast 4" />
+          </div>
+        </div>
+
+        <div class="guitargame-layer" id="guitarGameLayer">
+          <div class="chase-head">
+            <div class="live-chip" id="guitarTimer">TIME: 0.0</div>
+            <div class="live-chip" id="guitarBest">RANK: -</div>
+            <div class="live-chip" id="guitarHint">S:16.0秒以内 / A:28.0秒以内 / B:40.0秒以内</div>
+          </div>
+          <canvas id="guitarCanvas" class="chase-canvas" width="960" height="360"></canvas>
+          <div class="chase-actions">
+            <button class="choice-btn" id="guitarJumpBtn">JUMP</button>
+            <button class="choice-btn" id="guitarStartBtn">CHASE START</button>
+            <button class="choice-btn" id="guitarAudioBtn" data-audio-toggle>BGM: OFF</button>
+          </div>
+        </div>
+
+        <div class="textbox-wrap" id="textboxAdvance">
+          <div class="textbox">
+            <div class="name-tag" id="nameTag">-</div>
+            <div class="dialog" id="dialog"></div>
+            <div class="choices" id="choices"></div>
+            <div class="next-indicator" id="nextIndicator">NEXT ▸</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="howtoPanel" class="howto" role="dialog" aria-modal="true">
+      <h2>HOW TO PLAY</h2>
+      <p>軽音楽部の仲間を3人そろえて、学園祭ステージを成功させよう。</p>
+      <p>テキストはクリック/タップ/Enterで進行。ギター勧誘は2D追跡ミニゲーム。</p>
+      <p>学園祭の演奏ではミニゲーム発生。赤い声は押して弾く、緑の声は押さずに流す。</p>
+      <p>演奏開始前に3曲からBGMを選択。上から下へ流れ、下に到達した時点で判定。</p>
+      <p>最終結果は演奏スコアで判定。TARGET以上ならBEST END。</p>
+      <button class="mini-btn" id="closeHowto">CLOSE</button>
+    </div>
+  </div>
+
+  <audio id="bgm" src="bgm/放課後の太陽光線.mp3" loop preload="auto"></audio>
+
+  <script src="js/game-data.js"></script>
+  <script src="js/game-core.js"></script>
+  <script src="js/guitar-game.js"></script>
+  <script src="js/scene-ui.js"></script>
+  <script src="js/live-game.js"></script>
+  <script src="js/story-engine.js"></script>
+  <script src="js/bootstrap.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,74 @@
+﻿    .guitargame-layer {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 62px;
+      bottom: 178px;
+      z-index: 9;
+      display: none;
+      border: 2px solid #ffffffa0;
+      background: #0d0d0de8;
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      padding: 10px;
+    }
+
+    .guitargame-layer.active {
+      display: block;
+    }
+
+    .chase-head {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .chase-canvas {
+      width: 100%;
+      height: calc(100% - 98px);
+      border: 2px solid #ffffff66;
+      background: linear-gradient(180deg, #291a1e 0%, #1b1b1b 62%, #0a0a0a 100%);
+      display: block;
+      touch-action: none;
+    }
+
+    .chase-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    @keyframes shakeScene {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(4px); }
+      100% { transform: translateX(0); }
+    }
+
+    .howto {
+      position: absolute;
+      inset: 12vh 10vw;
+      border: 3px solid #fff;
+      background: #0d0d0df2;
+      padding: 22px;
+      clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+      z-index: 20;
+      display: none;
+    }
+
+    .howto.show { display: block; }
+
+    .howto h2 {
+      margin: 0 0 12px;
+      color: var(--red-bright);
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      font-size: clamp(1.5rem, 4vw, 2.4rem);
+    }
+
+    .howto p { margin: 8px 0; line-height: 1.6; }
+
