@@ -312,8 +312,8 @@
           scoredClear: false
         };
         w.obstacles.push(obs);
-        const minGap = phase === 1 ? 1.06 : phase === 2 ? 0.8 : 0.64;
-        const maxGap = phase === 1 ? 1.4 : phase === 2 ? 1.08 : 0.9;
+        const minGap = phase === 1 ? 1.34 : phase === 2 ? 1.04 : 0.86;
+        const maxGap = phase === 1 ? 1.82 : phase === 2 ? 1.42 : 1.18;
         w.spawnIn = minGap + Math.random() * (maxGap - minGap);
       }
 
