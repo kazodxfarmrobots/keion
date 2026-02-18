@@ -19,7 +19,7 @@
           speed: 240,
           spawnIn: 1.2,
           obstacles: [],
-          hp: 3,
+          hp: 10,
           invuln: 0,
           hitFlash: 0,
           screenShake: 0,
@@ -69,9 +69,9 @@
         if (obs.kind === "high") {
           return {
             x: obs.x,
-            y: groundY - 74,
+            y: groundY - 66,
             w: obs.w,
-            h: 22
+            h: 24
           };
         }
         return {
@@ -86,9 +86,9 @@
         return rank === 3 ? "S" : rank === 2 ? "A" : "B";
       }
 
-      function liveRankNow(timeSec, hp) {
-        if (timeSec >= 34 && hp >= 2) return 3;
-        if (timeSec >= 22 && hp >= 1) return 2;
+      function liveRankNow(_timeSec, hp) {
+        if (hp >= 7) return 3;
+        if (hp >= 4) return 2;
         return 1;
       }
 
@@ -435,7 +435,7 @@
         state.guitarLastTick = 0;
         resetGuitarWorld();
         el.guitarTimer.textContent = `TIME: 0.0 / ${state.guitarTimeLimit.toFixed(0)}`;
-        el.guitarBest.textContent = "HP: 3";
+        el.guitarBest.textContent = "HP: 10";
         el.guitarHint.textContent = "Survive 45s / Hold JUMP to charge / Down: SLIDE";
         el.guitarStartBtn.style.display = "block";
         el.app.classList.add("guitar-mode");
