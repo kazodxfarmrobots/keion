@@ -37,6 +37,10 @@
         return w.heroStandH - (w.heroStandH - w.heroSlideH) * w.slideBlend;
       }
 
+      function randRange(min, max) {
+        return min + Math.random() * (max - min);
+      }
+
       function guitarStartJumpCharge() {
         if (!state.guitarGameRunning || !state.guitarWorld) return;
         const w = state.guitarWorld;
@@ -46,7 +50,6 @@
 
       function guitarReleaseJump() {
         if (!state.guitarGameRunning || !state.guitarWorld) return;
-        if (!state.guitarWorld) return;
         const w = state.guitarWorld;
         if (!w.jumpChargeHold) return;
         w.jumpChargeHold = false;
@@ -97,7 +100,6 @@
         const heroTop = groundY - heroH - w.heroY;
         const heroBottom = heroTop + heroH;
         const heroLeft = w.heroScreenX;
-        const heroRight = heroLeft + w.heroW;
         const shake = w.screenShake > 0 ? (Math.random() - 0.5) * 10 * (w.screenShake / 0.3) : 0;
         const farOffset = -(w.scrollX * 0.18) % width;
         const midOffset = -(w.scrollX * 0.45) % width;
@@ -268,9 +270,9 @@
         updateHud();
         stopGuitarGame();
         if (cleared) {
-          sceneData.gSuccess.text = `...${t.toFixed(1)}秒を耐え切ったの！？ 度胸、見直した。私も本気で弾く。`;
+          sceneData.gSuccess.text = `...${t.toFixed(1)}秒生き残ったの！？ その度胸、信じられる。私も本気で弾く。`;
         } else {
-          sceneData.gSuccess.text = "最後まで耐えきれなかったけど、守ろうとしてくれたのは伝わった。私も弾く。";
+          sceneData.gSuccess.text = "最後まで生き残れなかったけど、守ろうとしてくれたのは伝わった。私も弾く。";
         }
         goScene("gSuccess");
       }
@@ -279,21 +281,39 @@
         const w = state.guitarWorld;
         const phase = state.guitarTime < 15 ? 1 : state.guitarTime < 30 ? 2 : 3;
         const kindRoll = Math.random();
-        let kind = kindRoll < (phase === 1 ? 0.25 : phase === 2 ? 0.42 : 0.5) ? "high" : "low";
+        let kind = kindRoll < (phase === 1 ? 0.22 : phase === 2 ? 0.34 : 0.42) ? "high" : "low";
         if (phase === 1 && w.obstacles.length > 0 && w.obstacles[w.obstacles.length - 1].kind === "high") {
           kind = "low";
         }
+
+        let lowHeight = 32;
+        let lowWidth = 30;
+        if (kind === "low") {
+          if (phase === 1) {
+            lowHeight = randRange(22, 44);
+            lowWidth = randRange(22, 36);
+          } else if (phase === 2) {
+            const tall = Math.random() < 0.33;
+            lowHeight = tall ? randRange(56, 72) : randRange(28, 52);
+            lowWidth = tall ? randRange(18, 26) : randRange(24, 38);
+          } else {
+            const tall = Math.random() < 0.58;
+            lowHeight = tall ? randRange(68, 92) : randRange(34, 58);
+            lowWidth = tall ? randRange(16, 24) : randRange(24, 36);
+          }
+        }
+
         const obs = {
           kind,
           x: w.scrollX + 900 + Math.random() * 220,
-          w: kind === "high" ? 76 + Math.random() * 26 : 24 + Math.random() * 18,
-          h: kind === "high" ? 22 : 22 + Math.random() * 16,
+          w: kind === "high" ? randRange(76, 102) : lowWidth,
+          h: kind === "high" ? 22 : lowHeight,
           scoredNear: false,
           scoredClear: false
         };
         w.obstacles.push(obs);
-        const minGap = phase === 1 ? 1.08 : phase === 2 ? 0.84 : 0.68;
-        const maxGap = phase === 1 ? 1.44 : phase === 2 ? 1.16 : 0.96;
+        const minGap = phase === 1 ? 1.06 : phase === 2 ? 0.8 : 0.64;
+        const maxGap = phase === 1 ? 1.4 : phase === 2 ? 1.08 : 0.9;
         w.spawnIn = minGap + Math.random() * (maxGap - minGap);
       }
 
@@ -395,7 +415,7 @@
         const nowRank = liveRankNow(state.guitarTime, w.hp);
         el.guitarTimer.textContent = `TIME: ${state.guitarTime.toFixed(1)} / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = `HP: ${Math.max(0, w.hp)}`;
-        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / JUMP ${Math.round(w.jumpScale * 100)}% (長押し)`;
+        el.guitarHint.textContent = `RANK NOW: ${rankLabel(nowRank)} / STREAK x${w.streak} / JUMP ${Math.round(w.jumpScale * 100)}% (long press)`;
 
         if (w.hp <= 0) {
           endGuitarGame(false);
@@ -416,7 +436,7 @@
         resetGuitarWorld();
         el.guitarTimer.textContent = `TIME: 0.0 / ${state.guitarTimeLimit.toFixed(0)}`;
         el.guitarBest.textContent = "HP: 3";
-        el.guitarHint.textContent = "45秒生存でCLEAR / JUMP長押しで高さ調整 / ↓: SLIDE";
+        el.guitarHint.textContent = "Survive 45s / Hold JUMP to charge / Down: SLIDE";
         el.guitarStartBtn.style.display = "block";
         el.app.classList.add("guitar-mode");
         el.guitarGameLayer.classList.add("active");
@@ -433,7 +453,7 @@
         state.guitarLastTick = 0;
         resetGuitarWorld();
         el.guitarStartBtn.style.display = "none";
-        el.guitarHint.textContent = "耐久開始... JUMP長押しで高さ調整 / ↓(S)でSLIDE";
+        el.guitarHint.textContent = "Hold JUMP, release to jump / Down(S) to slide";
         state.guitarLoopId = requestAnimationFrame(guitarTick);
       }
 
@@ -442,6 +462,7 @@
         state.guitarGameRunning = false;
         if (state.guitarWorld) {
           state.guitarWorld.slideHold = false;
+          state.guitarWorld.jumpChargeHold = false;
         }
         if (state.guitarLoopId) {
           cancelAnimationFrame(state.guitarLoopId);
