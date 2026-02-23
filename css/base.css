@@ -1,4 +1,7 @@
 ﻿    :root {
+/* File: css/base.css
+   Purpose: Global layout, typography, and shared components.
+*/
       --bg: #090909;
       --panel: #111111ee;
       --text: #f8f8f8;
@@ -7,6 +10,11 @@
       --line: #ffffff;
       --yellow: #ffd447;
       --shadow: 0 8px 26px #00000099;
+      --minigame-left: 12px;
+      --minigame-right: 12px;
+      --minigame-top: 62px;
+      --minigame-bottom: 178px;
+      --minigame-padding: 10px;
     }
 
     * { box-sizing: border-box; }
@@ -33,7 +41,13 @@
     #app.live-mode .status-panel,
     #app.guitar-mode .top-ui,
     #app.guitar-mode .stage-hud,
-    #app.guitar-mode .status-panel {
+    #app.guitar-mode .status-panel,
+    #app.bass-mode .top-ui,
+    #app.bass-mode .stage-hud,
+    #app.bass-mode .status-panel,
+    #app.drum-mode .top-ui,
+    #app.drum-mode .stage-hud,
+    #app.drum-mode .status-panel {
       display: none;
     }
 
@@ -227,6 +241,16 @@
       transform: translateY(0) scale(1);
     }
 
+    .chara.show.talk-pop {
+      animation: charaTalkPop 220ms ease-out;
+    }
+
+    @keyframes charaTalkPop {
+      0% { transform: translateY(0) scale(1); }
+      45% { transform: translateY(-10px) scale(1.01); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
     .chara.left { left: 2vw; }
     .chara.right { right: 2vw; }
 
@@ -288,12 +312,12 @@
       right: 0;
       bottom: 0;
       z-index: 7;
-      padding: 12px;
+      padding: 0;
     }
 
     .textbox {
-      width: min(1100px, calc(100% - 12px));
-      margin: 0 auto;
+      width: 100%;
+      margin: 0;
       background: var(--panel);
       border: 3px solid #fff;
       clip-path: polygon(22px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 22px) 100%, 0 100%, 0 22px);

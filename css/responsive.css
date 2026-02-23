@@ -1,17 +1,20 @@
 ﻿    @media (max-width: 780px) {
+      :root {
+/* File: css/responsive.css
+   Purpose: Responsive overrides for all scenes and minigames.
+*/
+        --minigame-left: 8px;
+        --minigame-right: 8px;
+        --minigame-top: 98px;
+        --minigame-bottom: 194px;
+        --minigame-padding: 8px;
+      }
+
       .status-panel {
         top: 52px;
         left: 10px;
         right: 10px;
         min-width: 0;
-      }
-
-      .livegame-layer {
-        top: 98px;
-        bottom: 194px;
-        left: 8px;
-        right: 8px;
-        padding: 8px;
       }
 
       .live-field {
@@ -34,20 +37,67 @@
         padding: 9px 11px;
       }
 
-      .guitargame-layer {
-        top: 98px;
-        bottom: 194px;
-        left: 8px;
-        right: 8px;
+      .bass-quiz-card {
+        grid-template-columns: 20px 1fr;
+        gap: 8px;
         padding: 8px;
       }
 
+      .bass-question-text {
+        font-size: 1rem;
+        min-height: 2.8em;
+      }
+
+      .bass-options {
+        grid-template-columns: 1fr;
+        gap: 7px;
+      }
+
+      .bass-option {
+        min-height: 46px;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+      }
+
       .chase-canvas {
-        height: calc(100% - 110px);
+        max-height: calc(100% - 110px);
       }
 
       .chase-actions {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .drum-canvas {
+        max-height: calc(100% - 92px);
+      }
+
+      .drum-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .drum-power-panel {
+        left: 148px;
+        right: 8px;
+        bottom: 8px;
+        gap: 6px;
+      }
+
+      .drum-dash-gauge {
+        right: 8px;
+        width: 170px;
+        bottom: 36px;
+      }
+
+      .drum-hp-gauge {
+        right: 8px;
+        width: 170px;
+        bottom: 64px;
+      }
+
+      .drum-power-slot {
+        min-width: 56px;
+        font-size: 9px;
+        padding: 0 4px;
       }
 
       .guitar-brief {
@@ -60,7 +110,7 @@
       }
 
       .guitar-brief-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
         margin-bottom: 9px;
       }
@@ -120,6 +170,14 @@
     }
 
     @media (max-height: 520px) and (orientation: landscape) {
+      :root {
+        --minigame-left: 8px;
+        --minigame-right: 8px;
+        --minigame-top: 8px;
+        --minigame-bottom: 8px;
+        --minigame-padding: 7px;
+      }
+
       .top-ui {
         top: 8px;
         right: 8px;
@@ -161,14 +219,6 @@
 
       .status-stars {
         font-size: 0.76rem;
-      }
-
-      .livegame-layer {
-        top: 8px;
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        padding: 7px;
       }
 
       .live-head {
@@ -224,12 +274,36 @@
         padding: 8px 10px;
       }
 
-      .guitargame-layer {
-        top: 8px;
-        bottom: 8px;
-        left: 8px;
-        right: 8px;
-        padding: 7px;
+      .bass-head {
+        gap: 5px;
+      }
+
+      .bass-quiz-card {
+        grid-template-columns: 16px 1fr;
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .bass-question-title {
+        font-size: 0.64rem;
+        margin-bottom: 5px;
+      }
+
+      .bass-question-text {
+        margin-bottom: 8px;
+        font-size: 0.82rem;
+        line-height: 1.42;
+        min-height: 2.4em;
+      }
+
+      .bass-options {
+        gap: 5px;
+      }
+
+      .bass-option {
+        min-height: 34px;
+        padding: 6px 8px;
+        font-size: 0.68rem;
       }
 
       .chase-head {
@@ -238,13 +312,52 @@
       }
 
       .chase-canvas {
-        height: calc(100% - 72px);
+        max-height: calc(100% - 72px);
       }
 
       .chase-actions {
         gap: 5px;
         margin-top: 5px;
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .drum-head {
+        gap: 5px;
+      }
+
+      .drum-canvas {
+        max-height: calc(100% - 70px);
+      }
+
+      .drum-actions {
+        gap: 5px;
+        margin-top: 5px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .drum-power-panel {
+        left: 138px;
+        right: 8px;
+        bottom: 8px;
+        gap: 5px;
+      }
+
+      .drum-dash-gauge {
+        right: 8px;
+        width: 150px;
+        bottom: 34px;
+      }
+
+      .drum-hp-gauge {
+        right: 8px;
+        width: 150px;
+        bottom: 60px;
+      }
+
+      .drum-power-slot {
+        min-width: 50px;
+        font-size: 8px;
+        padding: 0 3px;
       }
 
       .guitar-brief {
@@ -281,7 +394,7 @@
       }
 
       .textbox-wrap {
-        padding: 6px;
+        padding: 0;
       }
 
       .textbox {
@@ -295,8 +408,17 @@
     }
 
     @media (max-width: 932px) and (max-height: 430px) and (orientation: landscape) {
-      .livegame-layer {
+      :root {
+        --minigame-padding: 5px;
+      }
+
+      .bass-quiz-card {
         padding: 5px;
+      }
+
+      .bass-option {
+        min-height: 30px;
+        font-size: 0.64rem;
       }
 
       .live-head {

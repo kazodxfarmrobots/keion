@@ -1,9 +1,12 @@
 ﻿    .guitargame-layer {
+/* File: css/guitar-and-modal.css
+   Purpose: Styles for guitar minigame and modal panels.
+*/
       position: absolute;
-      left: 12px;
-      right: 12px;
-      top: 62px;
-      bottom: 178px;
+      left: var(--minigame-left);
+      right: var(--minigame-right);
+      top: var(--minigame-top);
+      bottom: var(--minigame-bottom);
       z-index: 9;
       display: none;
       border: 2px solid #ffffffa0;
@@ -12,7 +15,7 @@
         radial-gradient(circle at 16% 0%, #ff85612b 0%, transparent 40%),
         linear-gradient(180deg, #070a0fdc 0%, #0d0d0de8 100%);
       clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-      padding: 10px;
+      padding: var(--minigame-padding);
       overflow: hidden;
     }
 
@@ -45,8 +48,11 @@
     .chase-canvas {
       position: relative;
       z-index: 1;
-      width: 100%;
-      height: calc(100% - 98px);
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: calc(100% - 98px);
+      margin: 0 auto;
       border: 2px solid #ffffff66;
       background: linear-gradient(180deg, #1f2738 0%, #171a25 62%, #0a0a0a 100%);
       display: block;
@@ -137,7 +143,7 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       margin-bottom: 12px;
     }
@@ -169,6 +175,20 @@
       letter-spacing: 0.03em;
     }
 
+    .guitar-brief-card.attention-card {
+      grid-column: 1 / -1;
+    }
+
+    .guitar-brief-preview {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 2px 0 8px;
+      border: 1px solid #ffffff5e;
+      background: linear-gradient(180deg, #1f2738 0%, #171a25 62%, #0a0a0a 100%);
+      box-shadow: inset 0 0 0 1px #ffffff2c;
+    }
+
     .guitar-brief-start {
       position: relative;
       z-index: 1;
@@ -187,6 +207,45 @@
     .guitar-brief-start:hover {
       filter: brightness(1.08) saturate(1.1);
       transform: skew(-8deg) translateY(-1px);
+    }
+
+    .guitar-brief-actions {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: min(460px, 100%);
+      margin: 0 auto;
+    }
+
+    .guitar-brief-actions .choice-btn {
+      width: 100%;
+      margin: 0;
+      text-align: center;
+      transform: skew(-8deg);
+    }
+
+    .guitar-brief-actions .choice-btn:hover,
+    .guitar-brief-actions .choice-btn:focus-visible {
+      transform: skew(-8deg) translateY(-1px);
+    }
+
+    .guitar-brief-tutorial {
+      min-width: 170px;
+      background: linear-gradient(90deg, #2f8dff 0%, #36b6d9 100%);
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #0000005c;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    #guitarTutorialEndBtn {
+      background: linear-gradient(90deg, #2b323d 0%, #454e5d 100%);
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #0000005c;
+      font-weight: 900;
+      letter-spacing: 0.08em;
     }
 
     @keyframes briefEnter {

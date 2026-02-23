@@ -1,15 +1,18 @@
 ﻿    .livegame-layer {
+/* File: css/live-game.css
+   Purpose: Styles for live performance minigame.
+*/
       position: absolute;
-      left: 12px;
-      right: 12px;
-      top: 62px;
-      bottom: 178px;
+      left: var(--minigame-left);
+      right: var(--minigame-right);
+      top: var(--minigame-top);
+      bottom: var(--minigame-bottom);
       z-index: 9;
       display: none;
       border: 2px solid #ffffffa0;
       background: linear-gradient(180deg, #080808d9 0%, #111111cc 100%);
       clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-      padding: 10px;
+      padding: var(--minigame-padding);
     }
 
     .livegame-layer.active {
@@ -96,6 +99,22 @@
     .combo-chip {
       min-width: 86px;
       text-align: center;
+    }
+
+    .combo-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .combo-bonus {
+      min-height: 1em;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: #ffe987;
+      text-shadow: 0 1px 2px #000;
     }
 
     .live-controls {
@@ -478,6 +497,181 @@
       border: 2px solid #ffe1ab99;
       opacity: 0;
       pointer-events: none;
+    }
+
+    .live-keymini {
+      position: absolute;
+      inset: 0;
+      display: none;
+      z-index: 14;
+      pointer-events: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      background:
+        linear-gradient(135deg, #ffe10024 0 18%, transparent 18% 28%, #ffe1001a 28% 40%, transparent 40% 100%),
+        radial-gradient(circle at 50% 50%, #1a1a12d0 0%, #090909ea 74%);
+      text-align: center;
+    }
+
+    .live-keymini.active {
+      display: flex;
+    }
+
+    .live-keymini-title {
+      font-size: 0.8rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      color: #111;
+      background: #ffe100;
+      border: 2px solid #111;
+      padding: 4px 12px;
+      transform: skewX(-10deg);
+      box-shadow: 4px 4px 0 #000000a6;
+    }
+
+    .live-keymini-prompt {
+      font-size: clamp(1.2rem, 3.6vw, 1.95rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #ffe100;
+      background: #0f0f0f;
+      border: 3px solid #ffe100;
+      padding: 10px 20px;
+      min-width: min(86vw, 460px);
+      clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%, 0 14px);
+      box-shadow:
+        0 0 0 2px #111,
+        0 10px 20px #000000a6;
+      text-shadow: 0 2px 0 #000;
+    }
+
+    .live-keymini-typed {
+      min-height: 1.3em;
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #f6f6f6;
+      letter-spacing: 0.05em;
+      background: #0000009a;
+      border-left: 4px solid #ffe100;
+      padding: 4px 12px 4px 10px;
+      min-width: min(78vw, 420px);
+      text-align: left;
+    }
+
+    .live-keymini-timer {
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: #ffe100;
+      text-shadow: 0 2px 0 #000;
+    }
+
+    .live-keymini-result {
+      min-height: 1.2em;
+      font-size: 1.06rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #ffffff;
+      text-shadow: 0 1px 3px #000, 0 0 10px #ffe10066;
+    }
+
+    .live-streak-fx {
+      position: absolute;
+      top: 8%;
+      right: -38%;
+      z-index: 15;
+      pointer-events: none;
+      opacity: 0;
+      font-size: clamp(1rem, 4vw, 2rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      color: #ffe100;
+      background: #111;
+      border: 3px solid #ffe100;
+      padding: 8px 16px;
+      transform: skewX(-14deg);
+      text-shadow: 0 2px 0 #000;
+      box-shadow:
+        0 0 0 2px #000,
+        0 8px 18px #000000a0;
+    }
+
+    .live-streak-fx.play {
+      animation: liveStreakSlide 760ms cubic-bezier(0.2, 0.82, 0.18, 1) forwards;
+    }
+
+    .live-call-fx {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      z-index: 18;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      font-size: clamp(1.5rem, 7vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      color: #fff7ce;
+      text-shadow:
+        0 0 10px #ff8b38cc,
+        0 0 24px #ff5a2db8,
+        0 2px 3px #000;
+      border: 3px solid #ffe25a;
+      padding: 8px 18px 8px 24px;
+      background: linear-gradient(180deg, #2a1a11e8 0%, #0f0907e8 100%);
+      box-shadow: 0 0 0 2px #000, 0 10px 24px #00000099;
+    }
+
+    .live-call-fx.active {
+      opacity: 1;
+    }
+
+    .live-call-fx.play {
+      animation: liveCallFlash var(--call-ms, 700ms) cubic-bezier(0.16, 0.86, 0.2, 1) forwards;
+    }
+
+    @keyframes liveCallFlash {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.76);
+        filter: blur(5px);
+      }
+      24% {
+        opacity: 1;
+        transform: translate(-50%, -52%) scale(1.08);
+        filter: blur(0);
+      }
+      68% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.92);
+        filter: blur(2px);
+      }
+    }
+
+    @keyframes liveStreakSlide {
+      0% {
+        opacity: 0;
+        right: -38%;
+        filter: blur(3px);
+      }
+      14% {
+        opacity: 1;
+      }
+      78% {
+        opacity: 1;
+        right: 12%;
+        filter: blur(0);
+      }
+      100% {
+        opacity: 0;
+        right: -8%;
+        filter: blur(1.5px);
+      }
     }
 
     .combo-burst.play {

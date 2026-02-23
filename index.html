@@ -1,4 +1,5 @@
 ﻿<!doctype html>
+<!-- File: index.html | Purpose: Main game shell and all scene/minigame containers. -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -6,11 +7,14 @@
   <title>KEION LINK - School Festival Story</title>
   <link rel="stylesheet" href="css/base.css" />
   <link rel="stylesheet" href="css/live-game.css" />
+  <link rel="stylesheet" href="css/bass-game.css" />
+  <link rel="stylesheet" href="css/drum-game.css" />
   <link rel="stylesheet" href="css/guitar-and-modal.css" />
   <link rel="stylesheet" href="css/responsive.css" />
 </head>
 <body>
   <div id="app">
+    <!-- Title Screen -->
     <section id="titleScreen" class="screen active" aria-label="title">
       <div class="title-wrap">
         <div>
@@ -32,6 +36,7 @@
       </div>
     </section>
 
+    <!-- Main Game Screen -->
     <section id="gameScreen" class="screen" aria-label="game">
       <div class="scene" id="sceneRoot">
         <div class="bg-layer" id="bgA"></div>
@@ -39,6 +44,7 @@
         <div class="bg-overlay"></div>
         <div class="wipe" id="wipe"></div>
 
+        <!-- Top Controls -->
         <div class="top-ui">
           <button class="mini-btn" id="audioBtn" data-audio-toggle>BGM: OFF</button>
           <button class="mini-btn" id="backTitleBtn">TITLE</button>
@@ -52,20 +58,24 @@
           <div class="status-row"><span>DRUM</span><span class="status-stars" id="drumStars">---</span></div>
         </div>
 
+        <!-- Story Layer -->
         <div class="cast-layer">
           <img id="charaLeft" class="chara left" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="left character" />
           <img id="charaRight" class="chara right" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="right character" />
         </div>
 
+        <!-- Live Minigame -->
         <div class="livegame-layer" id="liveGameLayer">
           <div class="live-head">
-            <div class="live-chip" id="liveTimer">TIME: 18.0</div>
+            <div class="live-chip" id="liveTimer">TIME: 150.0</div>
             <div class="live-chip" id="liveFeverStatus">FEVER: LOCK</div>
           </div>
           <div class="mood-wrap">
-            <div class="mood-label">SCORE</div>
+            <div class="mood-label" id="liveScoreLabel">SCORE:0</div>
             <div class="mood-bar score-bar"><div class="mood-fill" id="liveScoreFill"></div></div>
-            <div class="live-chip combo-chip" id="liveCombo">COMBO x0</div>
+            <div class="combo-stack">
+              <div class="live-chip combo-chip" id="liveCombo">COMBO x0</div>
+            </div>
           </div>
           <div class="live-note" id="liveNote">上から下へ流れる。赤はタップで消す、緑は触らず流す。下到達で判定。赤タップは少し＋、緑タップはマイナス。</div>
           <div class="live-controls">
@@ -86,6 +96,15 @@
             <div class="combo-burst" id="liveComboBurst" aria-hidden="true">
               <div class="combo-burst-main" id="liveComboBurstMain">10 COMBO!</div>
             </div>
+            <div class="live-streak-fx" id="liveStreakFx" aria-hidden="true">2連続！</div>
+            <div class="live-call-fx" id="liveCallFx" aria-hidden="true">CALL!</div>
+            <div class="live-keymini" id="liveKeyMini" aria-live="polite">
+              <div class="live-keymini-title">KEYBOARD CHECK</div>
+              <div class="live-keymini-prompt" id="liveKeyMiniPrompt">お題: よろしく</div>
+              <div class="live-keymini-typed" id="liveKeyMiniTyped">入力: </div>
+              <div class="live-keymini-timer" id="liveKeyMiniTimer">4.0s</div>
+              <div class="live-keymini-result" id="liveKeyMiniResult"></div>
+            </div>
           </div>
           <div class="live-cast-lane" id="liveCastLane">
             <img id="liveCast1" class="live-cast" src="images/mini_human/主人公.png" alt="mini cast 1" />
@@ -95,10 +114,11 @@
           </div>
         </div>
 
+        <!-- Guitar Minigame -->
         <div class="guitargame-layer" id="guitarGameLayer">
           <div class="chase-head">
             <div class="live-chip" id="guitarTimer">TIME: 0.0</div>
-            <div class="live-chip" id="guitarBest">HP: 10</div>
+            <div class="live-chip" id="guitarBest">HP: 20</div>
             <div class="live-chip" id="guitarHint">85秒生存でCLEAR / ↑長押しでジャンプ溜め / ↓でしゃがみ</div>
           </div>
           <div class="guitar-brief" id="guitarBrief">
@@ -108,61 +128,170 @@
             <div class="guitar-brief-grid">
               <div class="guitar-brief-card">
                 <div class="guitar-brief-label">MISSION</div>
-                <p>85秒を生存。HPを守りつつ、回復アイテムを拾って持久戦を制する。</p>
+                <p>キャラは自動で進む 被弾でHP-1、回復アイテムでHP+1 うまく回避して生き残りハイスコアを目指そう！</p>
               </div>
               <div class="guitar-brief-card">
                 <div class="guitar-brief-label">CONTROLS</div>
-                <p>↑: 長押しジャンプ / ↓: しゃがみ / Z: 射撃（破壊障害物・ドローン）</p>
+                <p>↑長押しして離す: ジャンプ 長押しで高くなる  /  長押し: しゃがみ  /  Z: 射撃</p>
               </div>
-              <div class="guitar-brief-card">
+              <div class="guitar-brief-card attention-card">
                 <div class="guitar-brief-label">ATTENTION</div>
-                <p>カウントダウン後に突進するドローン、複数ヒットが必要な破壊障害物に注意。</p>
+                <canvas id="guitarBriefPreview" class="guitar-brief-preview" width="640" height="120" aria-label="障害物の見た目プレビュー"></canvas>
+                <p>地面の障害物は↑キーでジャンプ  /  浮いている障害物は↓キーでしゃがむ  /  赤バリケードとドローンはｚキーの射撃で対処</p>
               </div>
             </div>
-            <button class="choice-btn guitar-brief-start" id="guitarBriefStart">MISSION START</button>
+            <div class="guitar-brief-actions">
+              <button class="choice-btn guitar-brief-start" id="guitarBriefStart">MISSION START</button>
+              <button class="choice-btn guitar-brief-tutorial" id="guitarBriefTutorial">TUTORIAL</button>
+            </div>
           </div>
           <canvas id="guitarCanvas" class="chase-canvas" width="960" height="360"></canvas>
           <div class="chase-actions">
             <button class="choice-btn" id="guitarJumpBtn">JUMP ↑</button>
             <button class="choice-btn" id="guitarSlideBtn">DOWN ↓</button>
             <button class="choice-btn" id="guitarShootBtn">SHOOT Z</button>
+            <button class="choice-btn" id="guitarTutorialEndBtn" hidden>END TUTORIAL</button>
             <button class="choice-btn" id="guitarAudioBtn" data-audio-toggle>BGM: OFF</button>
           </div>
         </div>
 
+        <!-- Bass Minigame -->
+        <div class="bassgame-layer" id="bassGameLayer">
+          <div class="bass-head">
+            <div class="live-chip" id="bassQuizProgress">Q 1/3</div>
+            <button class="choice-btn" id="bassAudioBtn" data-audio-toggle>BGM: OFF</button>
+            <div class="live-chip" id="bassQuizCorrect">正解 0</div>
+            <div class="live-chip" id="bassQuizScore">SCORE 0</div>
+          </div>
+          <div class="bass-brief" id="bassBrief">
+            <div class="bass-brief-deco"></div>
+            <div class="bass-brief-kicker">BASS QUIZ BRIEFING</div>
+            <h2 class="bass-brief-title">BASS CHECK</h2>
+            <div class="bass-brief-grid">
+              <div class="bass-brief-card">
+                <div class="bass-brief-label">HOW TO PLAY</div>
+                <p>表示された4択から答えを選択。1-4キーまたはタップで回答し、Enterまたはクリックで次の問題へ進む。</p>
+              </div>
+            </div>
+            <button class="choice-btn bass-brief-start" id="bassBriefStart">QUIZ START</button>
+          </div>
+          <div class="bass-quiz-card" id="bassQuizCard">
+            <div class="bass-time-rail" aria-label="制限時間ゲージ">
+              <div class="bass-time-grid" id="bassTimeGrid"></div>
+            </div>
+            <div class="bass-question-wrap">
+              <div class="bass-question-title" id="bassQuestionTitle">QUESTION 1</div>
+              <p class="bass-question-text" id="bassQuestionText"></p>
+              <div class="bass-quiz-visual">
+                <p class="bass-quiz-speech" id="bassQuizSpeech" aria-live="polite"></p>
+                <img class="bass-quiz-mini" src="images/mini_human/quiz_mini.png" alt="クイズ案内ミニキャラ" />
+              </div>
+              <div class="bass-options" id="bassOptions">
+                <button class="choice-btn bass-option" id="bassOption0" data-choice="0"></button>
+                <button class="choice-btn bass-option" id="bassOption1" data-choice="1"></button>
+                <button class="choice-btn bass-option" id="bassOption2" data-choice="2"></button>
+                <button class="choice-btn bass-option" id="bassOption3" data-choice="3"></button>
+              </div>
+              <p class="bass-answer-explain" id="bassAnswerExplain" aria-live="polite"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drum Minigame -->
+        <div class="drumgame-layer" id="drumGameLayer">
+          <div class="drum-head">
+            <div class="live-chip" id="drumKills">STAGE 1/3 KILL 0/20</div>
+            <div class="drum-boss-gauge" id="drumBossGauge" aria-label="boss hp gauge">
+              <div class="drum-boss-fill" id="drumBossFill"></div>
+              <div class="drum-boss-label" id="drumBossLabel">BOSS HP</div>
+            </div>
+            <button class="choice-btn" id="drumAudioBtn" data-audio-toggle>BGM: OFF</button>
+          </div>
+          <canvas id="drumCanvas" class="drum-canvas" width="540" height="900"></canvas>
+          <div class="drum-comms-layer" id="drumCommsLayer" aria-live="polite">
+            <div class="drum-comms-panel" id="drumCommsPanel">
+              <div class="drum-comms-head">INCOMING TRANSMISSION</div>
+              <div class="drum-comms-line" id="drumCommsLine">
+                帰ったら
+                <button class="drum-comms-claim" id="drumCommsClaim" type="button">西の基地</button>
+                で合流だ
+              </div>
+              <div class="drum-comms-info-wrap">
+                <button class="drum-comms-info" id="drumCommsInfo" type="button" data-info-key="base-east">基地は東</button>
+                <button class="drum-comms-info" id="drumCommsInfoDogtag" type="button" data-info-key="dogtag-rude">DogTag:ルード</button>
+                <button class="drum-comms-info" id="drumCommsInfoCodeword" type="button" data-info-key="niitaka-nobore">ニイタカヤマノボレ</button>
+                <button class="drum-comms-info" id="drumCommsInfoOk" type="button" data-info-key="ok">OK！</button>
+              </div>
+              <div class="drum-comms-result" id="drumCommsResult">通信の内容を照合せよ</div>
+              <div class="drum-comms-time" aria-label="通信判定制限時間">
+                <div class="drum-comms-time-fill" id="drumCommsTimeFill"></div>
+                <div class="drum-comms-time-label" id="drumCommsTimeLabel">10.0s</div>
+              </div>
+              <div class="drum-comms-shot" id="drumCommsShot">お前は敵だ！</div>
+            </div>
+          </div>
+          <div class="drum-power-use" id="drumPowerUseFx" aria-live="polite"></div>
+          <div class="drum-actions">
+            <button class="choice-btn" id="drumUpBtn">▲</button>
+            <button class="choice-btn" id="drumDownBtn">▼</button>
+            <button class="choice-btn" id="drumLeftBtn">&#9664;</button>
+            <button class="choice-btn" id="drumRightBtn">&#9654;</button>
+          </div>
+          <div class="drum-power-panel">
+            <div class="drum-power" id="drumPowerBar" aria-label="power item slots">
+              <span class="drum-power-slot" data-slot="1">SPEED UP</span>
+              <span class="drum-power-slot" data-slot="2">HP HEAL</span>
+              <span class="drum-power-slot" data-slot="3">BOMB</span>
+              <span class="drum-power-slot" data-slot="4">LASER</span>
+              <span class="drum-power-slot" data-slot="5">CLONE</span>
+              <span class="drum-power-slot" data-slot="6">SCORE +10000</span>
+            </div>
+          </div>
+          <div class="drum-score-text" id="drumScoreText" aria-live="polite">SCORE 0</div>
+          <div class="drum-hp-gauge" id="drumHpGauge" aria-label="hp gauge">
+            <div class="drum-hp-fill" id="drumHpFill"></div>
+            <div class="drum-hp-label" id="drumHpLabel">HP</div>
+          </div>
+          <div class="drum-dash-gauge" id="drumDashGauge" aria-label="dodge gauge">
+            <div class="drum-dash-fill" id="drumDashFill"></div>
+            <div class="drum-dash-label" id="drumDashLabel">DODGE</div>
+          </div>
+        </div>
+
+        <!-- Story Textbox -->
         <div class="textbox-wrap" id="textboxAdvance">
           <div class="textbox">
             <div class="name-tag" id="nameTag">-</div>
             <div class="dialog" id="dialog"></div>
             <div class="choices" id="choices"></div>
-            <div class="next-indicator" id="nextIndicator">NEXT ▸</div>
+            <div class="next-indicator" id="nextIndicator">NEXT</div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- How To Panel -->
     <div id="howtoPanel" class="howto" role="dialog" aria-modal="true">
       <h2>HOW TO PLAY</h2>
       <p>軽音楽部の仲間を3人そろえて、学園祭ステージを成功させよう。</p>
-      <p>テキストはクリック/タップ/Enterで進行。ギター勧誘は2Dサバイバル回避ミニゲーム。</p>
-      <p>学園祭の演奏ではミニゲーム発生。赤い声は押して弾く、緑の声は押さずに流す。</p>
-      <p>演奏開始前に3曲からBGMを選択。上から下へ流れ、下に到達した時点で判定。</p>
-      <p>最終結果は演奏スコアで判定。TARGET以上ならBEST END。</p>
+      <p>テキストはクリック/タップ/Enterで進行。</p>
+      <p>仲間をそろえるには、それぞれミニゲームをクリアする必要がある。</p>
       <button class="mini-btn" id="closeHowto">CLOSE</button>
     </div>
   </div>
 
+  <!-- Shared BGM -->
   <audio id="bgm" src="bgm/放課後の太陽光線.mp3" loop preload="auto"></audio>
 
+  <!-- Scripts -->
   <script src="js/game-data.js"></script>
   <script src="js/game-core.js"></script>
   <script src="js/guitar-game.js"></script>
+  <script src="js/bass-game.js"></script>
+  <script src="js/drum-game.js"></script>
   <script src="js/scene-ui.js"></script>
   <script src="js/live-game.js"></script>
   <script src="js/story-engine.js"></script>
   <script src="js/bootstrap.js"></script>
 </body>
 </html>
-
-
-
