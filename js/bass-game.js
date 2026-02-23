@@ -4,34 +4,63 @@
 
 const BASS_QUIZ_QUESTIONS = [
   {
-    q: "ベースの主な役割として最も近いものは？",
-    options: ["リズムと低音で土台を作る", "常に最前でソロを弾く", "テンポを自由に毎回変える", "歌詞を表示する"],
-    answer: 0,
-    explain: "ベースはドラムと連携し、低音で楽曲の土台を作る。"
+    q: "14982+98221+12345は？　ヒント：１の位に注目",
+    options: ["65,535", "123,689", "125,548", "127,894"],
+    answer: 2,
+    explain: "1の位を計算した後に、選択肢の1の位を見ると？"
   },
   {
-    q: "4弦ベースの標準チューニングは？",
-    options: ["E-A-D-G", "D-G-B-E", "A-D-G-C", "C-F-Bb-Eb"],
-    answer: 0,
-    explain: "一般的な4弦ベースは E-A-D-G。"
+    q: "銃の安全装置をかけると？",
+    options: [
+      "引き金を引けなくなり、発砲を完全に防ぐことが出来る。",
+      "引き金を引けなくなるが、発砲を完全に防ぐことはできない。",
+      "銃が消滅し、世界が平和になる。",
+      "人が死ななくなる"
+    ],
+    answer: 1,
+    explain: ""
   },
   {
-    q: "バンドでグルーヴを安定させるために重要なのは？",
-    options: ["ドラムとのタイミングをそろえる", "毎小節でテンポを上げる", "毎回別の調で弾く", "音量を0にする"],
-    answer: 0,
-    explain: "ドラムとタイミングをそろえると、演奏全体の安定感が上がる。"
+    q: "見てはいけない、禁止といわれるほど、逆に気になってしまう心理を何という？",
+    options: ["ミナイデ効果", "カリギュラ効果", "バーナム効果", "モンティーホール問題"],
+    answer: 1,
+    explain: "映画の名前「カリギュラ」が由来。過激な内容で上映禁止となり、それがかえって世間の注目を引いたということがもとになっているとされている。"
   },
   {
-    q: "ピック弾きの特徴として正しいものは？",
-    options: ["立ち上がりがはっきりしやすい", "必ず無音になる", "弦を使わない", "低音が出せない"],
+    q: "恐怖、緊張を感じる状況で、一緒にいる相手を魅力的だと感じてしまう現象は？",
+    options: ["吊り橋効果", "ドキドキ効果", "お化け屋敷効果", "ときめき効果"],
     answer: 0,
-    explain: "ピック弾きはアタックが明確で、輪郭を出しやすい。"
+    explain: "恐怖や緊張による心臓の鼓動を、脳が恋愛感情のときめきと錯覚してしまうため起きる現象"
   },
   {
-    q: "フィンガー弾きの利点として近いものは？",
-    options: ["ニュアンスを付けやすい", "絶対に速弾きできない", "必ず歪む", "高音しか出ない"],
+    q: "「あなたは最近大切な決断をしましたね？」というように、誰にでも当てはまりそうな説明を、自分だけに当てはまると感じてしまう心理は？",
+    options: ["ニンベン師効果", "占い効果", "バーナム効果", "詐欺師効果"],
+    answer: 2,
+    explain: "占いが当たっていると感じる理由の代表例"
+  },
+  {
+    q: "人から親切にされると、お返しをしなければならないと感じる心理は？",
+    options: ["ホワイトデー効果", "3倍返しの法則", "返報性の原理", "同調圧力"],
+    answer: 2,
+    explain: "試食、無料サンプル、「いいね」返しにも使われる心理"
+  },
+  {
+    q: "目の前でトラブルが起きているというのに、誰かがやるだろうと思ってしまい、誰も助けないという心理は？",
+    options: ["傍観者効果", "人間原理", "ミテミヌフリ効果", "他人効果"],
     answer: 0,
-    explain: "指弾きは強弱や音色のニュアンス調整がしやすい。"
+    explain: "女性が襲われ、目撃者が多数いたにもかかわらず誰も助けようとせずに、そのまま殺されてしまったという事件がありました。"
+  },
+  {
+    q: "20個のうち1つだけが当たりのくじがある。引いたくじは戻さないことにすると、10人目が引いたときに当たる確率は？",
+    options: ["1/10", "1/20", "20/20", "1/255"],
+    answer: 1,
+    explain: "どの順番でも、確率は同じです。"
+  },
+  {
+    q: "最初に相手に小さな要求を承諾させ、段々と要求を大きくしていくことで、目的となる要求を承諾させるという、心理的なテクニックは？",
+    options: ["詐欺師効果", "巡回セールスマン問題", "フットインザドア", "卑怯効果"],
+    answer: 2,
+    explain: "一度相手の要求を承諾してしまうと、次の要求を否定しにくくなるという心理です。"
   }
 ];
 
@@ -61,6 +90,12 @@ function bassRankByCorrect(correct, total) {
   const ratio = correct / questionTotal;
   if (ratio >= 0.8) return 3;
   if (ratio >= 0.5) return 2;
+  return 1;
+}
+
+function bassRankByScore(score) {
+  if (score >= 27000) return 3;
+  if (score >= 18000) return 2;
   return 1;
 }
 
@@ -207,12 +242,18 @@ function finishBassQuiz() {
   state.bassQuizRunning = false;
   cancelBassQuizLoop();
   const correct = state.bassQuizCorrectCount;
-  const total = state.bassQuizQuestions.length;
-  const rank = bassRankByCorrect(correct, total);
+  const rank = bassRankByScore(state.bassQuizScore);
+  state.bassFinalScore = state.bassQuizScore;
   state.members.bass = true;
   setMemberStatus("bass", rank);
   updateHud();
-  sceneData.bSuccess.text = `クイズ結果: ${correct}/${total}正解 / SCORE ${state.bassQuizScore}。学園祭まで、全力で弾く。`;
+  if (rank === 3) {
+    sceneData.bSuccess.text = "く、くやしいっ。わたしにクイズ王は早かったかなぁ？　わかった。ベースやるよ。";
+  } else if (rank === 2) {
+    sceneData.bSuccess.text = "ふ、ふーん。結構やるね。約束だし、ベースやってあげる。";
+  } else {
+    sceneData.bSuccess.text = "えっと。軽い練習にはなったかな。お礼にベースやったげる。";
+  }
   stopBassQuizGame();
   goScene("bSuccess");
 }

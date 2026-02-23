@@ -139,6 +139,163 @@
   flex-wrap: wrap;
 }
 
+.drum-brief {
+  position: absolute;
+  inset: 56px 18px 62px;
+  z-index: 9;
+  display: none;
+  color: #f9fbff;
+  padding: 18px 18px 14px;
+  clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  background:
+    linear-gradient(122deg, #2f74ff 0 14%, transparent 14% 100%),
+    linear-gradient(165deg, #06090df2 0%, #0d1119f4 52%, #131722f4 100%);
+  border: 2px solid #f2f6ffcc;
+  box-shadow: 0 0 0 2px #09111d inset, 0 14px 34px #0000006f;
+  overflow: hidden;
+}
+
+.drum-brief.show {
+  display: block;
+  animation: drumBriefEnter 340ms cubic-bezier(0.18, 0.88, 0.32, 1);
+}
+
+.drum-brief::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(-24deg, #ffffff14 0 2px, transparent 2px 22px),
+    linear-gradient(90deg, transparent 0 56%, #4a8eff22 56% 100%);
+  opacity: 0.58;
+}
+
+.drum-brief-deco {
+  position: absolute;
+  right: -46px;
+  top: 8px;
+  width: 182px;
+  height: 28px;
+  transform: rotate(-18deg);
+  background: linear-gradient(90deg, #49dbff 0%, #4d8dff 100%);
+  box-shadow: 0 0 0 2px #00000066;
+  opacity: 0.92;
+}
+
+.drum-brief-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  color: #090b12;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.drum-brief-title {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: clamp(1.06rem, 2.2vw, 1.48rem);
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #000, 2px 2px 0 #2666e1;
+}
+
+.drum-brief-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.drum-brief-card {
+  background: linear-gradient(180deg, #ffffff17 0%, #ffffff08 100%);
+  border: 1px solid #ffffff55;
+  padding: 10px 10px 9px;
+  min-height: 90px;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+}
+
+.drum-brief-label {
+  margin-bottom: 6px;
+  color: #79dcff;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #000, 0 0 8px #79dcff4a;
+}
+
+.drum-brief-card p {
+  margin: 0;
+  color: #f2f8ff;
+  line-height: 1.45;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.drum-brief-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: min(460px, 100%);
+  margin: 0 auto;
+}
+
+.drum-brief-actions .choice-btn {
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  transform: skew(-8deg);
+}
+
+.drum-brief-actions .choice-btn:hover,
+.drum-brief-actions .choice-btn:focus-visible {
+  transform: skew(-8deg) translateY(-1px);
+}
+
+.drum-brief-start {
+  background: linear-gradient(90deg, #2e67ff 0%, #22b6ff 100%);
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #0000005c;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+.drum-brief-tutorial {
+  background: linear-gradient(90deg, #31a672 0%, #4ccc7f 100%);
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #0000005c;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+#drumTutorialEndBtn {
+  background: linear-gradient(90deg, #2b323d 0%, #454e5d 100%);
+  border-color: #fff;
+  box-shadow: 0 0 0 2px #0000005c;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+@keyframes drumBriefEnter {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .drum-boss-gauge {
   position: relative;
   width: min(300px, 46vw);

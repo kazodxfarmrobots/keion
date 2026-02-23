@@ -890,6 +890,7 @@ function endGuitarGame(cleared) {
   if (w) {
     w.finalScore = finalScore;
   }
+  state.guitarFinalScore = finalScore;
   const rank = guitarRankByScore(finalScore);
   applyGuitarRank(rank, t);
   state.members.guitar = true;

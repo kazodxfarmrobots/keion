@@ -69,6 +69,7 @@
           <div class="live-head">
             <div class="live-chip" id="liveTimer">TIME: 150.0</div>
             <div class="live-chip" id="liveFeverStatus">FEVER: LOCK</div>
+            <button class="choice-btn live-start" id="liveTutorialEndBtn" hidden>END TUTORIAL</button>
           </div>
           <div class="mood-wrap">
             <div class="mood-label" id="liveScoreLabel">SCORE:0</div>
@@ -79,14 +80,36 @@
           </div>
           <div class="live-note" id="liveNote">上から下へ流れる。赤はタップで消す、緑は触らず流す。下到達で判定。赤タップは少し＋、緑タップはマイナス。</div>
           <div class="live-controls">
-            <select id="liveMusicSelect" class="live-select" aria-label="演奏BGMを選択">
+            <button class="choice-btn live-start" id="liveFeverBtn">FULL STAR</button>
+            <button class="choice-btn live-start" id="liveAudioBtn" data-audio-toggle>BGM: OFF</button>
+          </div>
+          <div class="live-brief" id="liveBrief">
+            <div class="live-brief-deco"></div>
+            <div class="live-brief-kicker">LIVE BRIEFING</div>
+            <h2 class="live-brief-title">HOW TO PLAY</h2>
+            <div class="live-brief-grid">
+              <div class="live-brief-card">
+                <div class="live-brief-label">RULE</div>
+                <p>上から流れる吹き出しを判定ラインまで管理。赤はタップで処理、緑は触らず流す。</p>
+              </div>
+              <div class="live-brief-card">
+                <div class="live-brief-label">SCORE</div>
+                <p>赤の処理成功で加点。誤操作や見逃しで減点。コンボを維持して高得点を狙う。</p>
+              </div>
+              <div class="live-brief-card">
+                <div class="live-brief-label">TUTORIAL</div>
+                <p>TUTORIALは練習用。END TUTORIALでいつでも説明画面へ戻れる。</p>
+              </div>
+            </div>
+            <select id="liveMusicSelect" class="live-select live-brief-select" aria-label="演奏BGMを選択">
               <option value="track1">スターチェンジ</option>
               <option value="track2">黒い幕が上がる夜</option>
               <option value="track3">命火のレクイエム</option>
             </select>
-            <button class="choice-btn live-start" id="liveStartBtn">演奏開始</button>
-            <button class="choice-btn live-start" id="liveFeverBtn">FULL STAR</button>
-            <button class="choice-btn live-start" id="liveAudioBtn" data-audio-toggle>BGM: OFF</button>
+            <div class="live-brief-actions">
+              <button class="choice-btn live-start" id="liveStartBtn">演奏開始</button>
+              <button class="choice-btn live-start" id="liveTutorialBtn">TUTORIAL</button>
+            </div>
           </div>
           <div class="live-field" id="liveField">
             <div class="live-cutin" id="liveCutin">
@@ -205,7 +228,36 @@
               <div class="drum-boss-fill" id="drumBossFill"></div>
               <div class="drum-boss-label" id="drumBossLabel">BOSS HP</div>
             </div>
+            <button class="choice-btn" id="drumTutorialEndBtn" hidden>END TUTORIAL</button>
             <button class="choice-btn" id="drumAudioBtn" data-audio-toggle>BGM: OFF</button>
+          </div>
+          <div class="drum-brief" id="drumBrief">
+            <div class="drum-brief-deco"></div>
+            <div class="drum-brief-kicker">DRUM MISSION BRIEF</div>
+            <h2 class="drum-brief-title">COSMIC SHOOTER</h2>
+            <div class="drum-brief-grid">
+              <div class="drum-brief-card">
+                <div class="drum-brief-label">MISSION</div>
+                <p>3ステージ突破でCLEAR。敵弾を避けながら撃破しボスを倒せ!</p>
+                <p>途中、通信イベントが発生する。持っている情報と、相手の通信を照らし合わせる。間違っていれば敵だ！ ← →キーで選択してENTERで指摘しよう</p>
+                <p>合っていれば、OKを選択だ!</p>
+              </div>
+              <div class="drum-brief-card">
+                <div class="drum-brief-label">CONTROLS</div>
+                <p>移動: 矢印 / 射撃は自動連射</p>
+                <p>Shiftで回避ロール、Zでパワー使用</p>
+              </div>
+              <div class="drum-brief-card">
+                <div class="drum-brief-label">ATTENTION</div>
+                <p>敵を倒すと、アイテムを取得できる</p>
+                <p>取得したアイテムの数に応じて、得られるパワーが異なる</p>
+                <p></p>
+              </div>
+            </div>
+            <div class="drum-brief-actions">
+              <button class="choice-btn drum-brief-start" id="drumBriefStart">MISSION START</button>
+              <button class="choice-btn drum-brief-tutorial" id="drumBriefTutorial">TUTORIAL</button>
+            </div>
           </div>
           <canvas id="drumCanvas" class="drum-canvas" width="540" height="900"></canvas>
           <div class="drum-comms-layer" id="drumCommsLayer" aria-live="polite">
@@ -255,6 +307,38 @@
           <div class="drum-dash-gauge" id="drumDashGauge" aria-label="dodge gauge">
             <div class="drum-dash-fill" id="drumDashFill"></div>
             <div class="drum-dash-label" id="drumDashLabel">DODGE</div>
+          </div>
+        </div>
+
+        <div class="finalscore-layer" id="finalScoreLayer" aria-live="polite">
+          <div class="finalscore-panel">
+            <div class="finalscore-kicker">FINAL REPORT</div>
+            <h2 class="finalscore-title">ALL SCORES</h2>
+            <div class="finalscore-grid">
+              <div class="finalscore-card">
+                <div class="finalscore-label">GUITAR MINIGAME</div>
+                <div class="finalscore-value" id="finalGuitarScore">0</div>
+              </div>
+              <div class="finalscore-card">
+                <div class="finalscore-label">BASS MINIGAME</div>
+                <div class="finalscore-value" id="finalBassScore">0</div>
+              </div>
+              <div class="finalscore-card">
+                <div class="finalscore-label">DRUM MINIGAME</div>
+                <div class="finalscore-value" id="finalDrumScore">0</div>
+              </div>
+              <div class="finalscore-card">
+                <div class="finalscore-label">LIVE MINIGAME</div>
+                <div class="finalscore-value" id="finalLiveScore">0</div>
+              </div>
+            </div>
+            <div class="finalscore-total-wrap">
+              <span class="finalscore-total-label">TOTAL</span>
+              <span class="finalscore-total-value" id="finalTotalScore">0</span>
+            </div>
+            <div class="finalscore-actions">
+              <button class="mini-btn" id="finalBackTitleBtn">タイトルに戻る</button>
+            </div>
           </div>
         </div>
 

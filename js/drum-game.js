@@ -1533,6 +1533,11 @@ function drawDrumGame(ctx) {
 
 function endDrumGame(cleared) {
   if (!state.drumWorld) return;
+  state.drumFinalScore = state.drumWorld.score || 0;
+  if (state.drumTutorialMode) {
+    finishDrumTutorial(cleared);
+    return;
+  }
   if (cleared) {
     const timeLeft = Math.max(0, state.drumTimeLimit - state.drumTime);
     const rank = drumRankByResult(state.drumWorld.player.hp, timeLeft);
@@ -1552,6 +1557,43 @@ function endDrumGame(cleared) {
   sceneData.dFail.text = "被弾で離脱したが、最低限の連携は取れた。次へ進もう。";
   stopDrumGame();
   goScene("dFail");
+}
+
+function finishDrumTutorial(_cleared) {
+  state.drumGameRunning = false;
+  state.drumTutorialMode = false;
+  state.drumCommsPending = false;
+  if (state.drumCommsIntroTimer) {
+    clearTimeout(state.drumCommsIntroTimer);
+    state.drumCommsIntroTimer = 0;
+  }
+  endDrumCommsEncounter();
+  resetDrumInputSources();
+  resetDrumWorld();
+  updateDrumStageHud();
+  updateDrumHpGauge();
+  updateDrumDashGauge();
+  updateDrumBossGauge();
+  updateDrumScoreText();
+  updateDrumCommsTimeGauge();
+  updateDrumPowerUi();
+  if (state.drumLoopId) {
+    cancelAnimationFrame(state.drumLoopId);
+    state.drumLoopId = 0;
+  }
+  if (el.drumBrief) {
+    el.drumBrief.classList.add("show");
+  }
+  if (el.drumTutorialEndBtn) {
+    el.drumTutorialEndBtn.hidden = true;
+  }
+  drawDrumGame(el.drumCanvas.getContext("2d"));
+}
+
+function stopDrumTutorialByButton() {
+  if (!state.drumGameActive) return;
+  if (!state.drumTutorialMode) return;
+  finishDrumTutorial(false);
 }
 function drumTick(now) {
   if (!state.drumGameRunning || !state.drumWorld) return;
@@ -1919,6 +1961,7 @@ function drumTick(now) {
 function openDrumGame() {
   state.drumGameActive = true;
   state.drumGameRunning = false;
+  state.drumTutorialMode = false;
   state.drumTime = 0;
   state.drumLastTick = 0;
   state.drumStartLockUntil = (window.performance ? performance.now() : Date.now()) + 280;
@@ -1950,14 +1993,21 @@ function openDrumGame() {
 
   el.app.classList.add("drum-mode");
   el.drumGameLayer.classList.add("active");
+  if (el.drumBrief) {
+    el.drumBrief.classList.add("show");
+  }
+  if (el.drumTutorialEndBtn) {
+    el.drumTutorialEndBtn.hidden = true;
+  }
   el.textboxAdvance.classList.add("hidden");
   drawDrumGame(el.drumCanvas.getContext("2d"));
 }
 
-function startDrumGame() {
+function startDrumGame(tutorialMode = false) {
   if (!state.drumGameActive || state.drumGameRunning) return;
   const now = window.performance ? performance.now() : Date.now();
   if (state.drumStartLockUntil && now < state.drumStartLockUntil) return;
+  state.drumTutorialMode = !!tutorialMode;
   state.drumGameRunning = true;
   state.drumTime = 0;
   state.drumLastTick = 0;
@@ -1978,6 +2028,12 @@ function startDrumGame() {
   updateDrumScoreText();
   updateDrumCommsTimeGauge();
   updateDrumPowerUi();
+  if (el.drumBrief) {
+    el.drumBrief.classList.remove("show");
+  }
+  if (el.drumTutorialEndBtn) {
+    el.drumTutorialEndBtn.hidden = !state.drumTutorialMode;
+  }
   if (el.bgm.getAttribute("src") !== DRUM_BGM_SRC) {
     el.bgm.src = DRUM_BGM_SRC;
     el.bgm.load();
@@ -1991,6 +2047,10 @@ function startDrumGame() {
     el.bgm.pause();
   }
   state.drumLoopId = requestAnimationFrame(drumTick);
+}
+
+function startDrumTutorial() {
+  startDrumGame(true);
 }
 
 function skipDrumToBoss() {
@@ -2008,6 +2068,10 @@ function skipDrumToBoss() {
 
 function skipDrumGame() {
   if (!state.drumGameActive) return;
+  if (state.drumTutorialMode) {
+    finishDrumTutorial(false);
+    return;
+  }
   state.members.drum = true;
   setMemberStatus("drum", 3);
   updateHud();
@@ -2019,6 +2083,7 @@ function skipDrumGame() {
 function stopDrumGame() {
   state.drumGameActive = false;
   state.drumGameRunning = false;
+  state.drumTutorialMode = false;
   state.drumCommsPending = false;
   if (state.drumCommsIntroTimer) {
     clearTimeout(state.drumCommsIntroTimer);
@@ -2039,6 +2104,12 @@ function stopDrumGame() {
   el.app.classList.remove("drum-mode");
   if (el.drumGameLayer) {
     el.drumGameLayer.classList.remove("active");
+  }
+  if (el.drumBrief) {
+    el.drumBrief.classList.remove("show");
+  }
+  if (el.drumTutorialEndBtn) {
+    el.drumTutorialEndBtn.hidden = true;
   }
   el.textboxAdvance.classList.remove("hidden");
   restoreDefaultBgm();

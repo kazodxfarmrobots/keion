@@ -162,24 +162,42 @@ const sceneData = {
     next: "pickBass"
   },
   bSuccess: {
-    bg: "hallway",
-    chars: [{ slot: "right", key: "bass" }],
+    bg: "classroom",
+    chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "bass" }],
     speaker: "三つ葉",
     text: "分かった。学園祭まで、全力で弾く。",
+    next: "nextDayAfterBass"
+  },
+  nextDayAfterBass: {
+    bg: "black",
+    chars: [],
+    speaker: "Narration",
+    text: "翌日",
+    holdMs: 3000,
     next: "introDrum"
   },
   introDrum: {
-    bg: "stage",
+    bg: "hallway",
     chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "drum" }],
-    speaker: "ドラム担当・茉桜",
-    text: "爆音で空気を変えるのが私の仕事。覚悟、ある？",
+    speaker: "主人公",
+    talker: "left",
+    text: "茉桜さんって、ドラムやってたよね？　もしよかったら、一緒に学園祭で演奏しない？",
     next: "drumShootIntro"
   },
   drumShootIntro: {
-    bg: "stage",
+    bg: "hallway",
     chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "drum" }],
     speaker: "茉桜",
-    text: "宇宙訓練シミュレーターで実力を見せて。75秒以内に45機撃破できたら、私も行く。",
+    talker: "right",
+    text: "悪いけど、私このゲームに夢中なのよ。…くっ。このゲーム難しいわっ！",
+    next: "drumShootIntro2"
+  },
+  drumShootIntro2: {
+    bg: "hallway",
+    chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "drum" }],
+    speaker: "茉桜",
+    talker: "right",
+    text: "そうだわ。あなたがこのゲームをクリアしてくれたら、一緒に演奏してあげる。さ、プレイしなさい？",
     next: "drumShootGame"
   },
   drumShootGame: {
@@ -219,6 +237,14 @@ const sceneData = {
     chars: [{ slot: "right", key: "drum" }],
     speaker: "茉桜",
     text: "いいね。暴れよう、学園祭で。",
+    next: "festivalDayIntro"
+  },
+  festivalDayIntro: {
+    bg: "black",
+    chars: [],
+    speaker: "Narration",
+    text: "そして、文化祭当日",
+    holdMs: 3000,
     next: "festivalIntro"
   },
   festivalIntro: {
@@ -247,6 +273,13 @@ const sceneData = {
     chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "guitar" }],
     speaker: "SYSTEM",
     text: "判定へ...",
+    next: "finalScores"
+  },
+  finalScores: {
+    bg: "stage",
+    chars: [],
+    speaker: "SYSTEM",
+    text: "最終リザルト",
     next: null
   }
 };

@@ -27,7 +27,21 @@ function bindEvents() {
     btn.addEventListener("click", () => toggleAudio());
   });
   el.backTitleBtn.addEventListener("click", () => switchScreen("title"));
-  el.liveStartBtn.addEventListener("click", startLiveRound);
+  if (el.finalBackTitleBtn) {
+    el.finalBackTitleBtn.addEventListener("click", () => switchScreen("title"));
+  }
+  el.liveStartBtn.addEventListener("click", () => startLiveRound(false));
+  if (el.liveTutorialBtn) {
+    el.liveTutorialBtn.addEventListener("click", startLiveTutorial);
+  }
+  if (el.liveTutorialEndBtn) {
+    const onEndLiveTutorial = (e) => {
+      e.preventDefault();
+      stopLiveTutorialByButton();
+    };
+    el.liveTutorialEndBtn.addEventListener("click", onEndLiveTutorial);
+    el.liveTutorialEndBtn.addEventListener("pointerdown", onEndLiveTutorial);
+  }
   el.liveFeverBtn.addEventListener("click", activateLiveFever);
   if (el.guitarStartBtn) {
     el.guitarStartBtn.addEventListener("click", () => startGuitarGame(false));
@@ -151,6 +165,18 @@ function bindEvents() {
       if (!state.drumGameRunning) startDrumGame();
     });
   }
+  if (el.drumBriefStart) {
+    el.drumBriefStart.addEventListener("click", () => startDrumGame(false));
+  }
+  if (el.drumBriefTutorial) {
+    el.drumBriefTutorial.addEventListener("click", startDrumTutorial);
+  }
+  if (el.drumTutorialEndBtn) {
+    el.drumTutorialEndBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      stopDrumTutorialByButton();
+    });
+  }
 
   el.closeHowto.addEventListener("click", () => showHowto(false));
   el.howtoPanel.addEventListener("click", (e) => {
@@ -267,6 +293,11 @@ function bindEvents() {
         return;
       }
       if (state.liveActive) {
+        if (e.key.toLowerCase() === "s") {
+          e.preventDefault();
+          if (!e.repeat) skipLiveGame();
+          return;
+        }
         if (handleLiveKeyboardMiniKey(e)) {
           e.preventDefault();
           return;

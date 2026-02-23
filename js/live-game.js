@@ -48,7 +48,11 @@ function getLivePerformanceTier(score) {
 }
 
 function updateLiveHud() {
-  el.liveTimer.textContent = `TIME: ${state.liveTimeLeft.toFixed(1)}`;
+  if (state.liveTutorialMode) {
+    el.liveTimer.textContent = "TIME: TUTORIAL";
+  } else {
+    el.liveTimer.textContent = `TIME: ${state.liveTimeLeft.toFixed(1)}`;
+  }
   const fill = Math.max(0, Math.min(LIVE_SCORE_BAR_MAX, state.liveScore)) / LIVE_SCORE_BAR_MAX;
   el.liveScoreFill.style.width = `${(fill * 100).toFixed(2)}%`;
   if (el.liveScoreLabel) {
@@ -621,10 +625,57 @@ function spawnVoice() {
 }
 
 function endLiveGame() {
+  if (state.liveTutorialMode) {
+    finishLiveTutorial();
+    return;
+  }
+  state.liveFinalScore = state.liveScore;
   state.livePerformanceTier = getLivePerformanceTier(state.liveScore);
   state.liveSuccess = state.livePerformanceTier !== "fail";
   stopLiveGame();
   goScene("result");
+}
+
+function finishLiveTutorial() {
+  state.liveRunning = false;
+  state.liveTutorialMode = false;
+  state.liveRoundToken += 1;
+  if (state.liveLoopId) {
+    cancelAnimationFrame(state.liveLoopId);
+    state.liveLoopId = 0;
+  }
+  clearLiveVoices();
+  setLiveKeyMiniVisible(false);
+  setLiveCallVisible(false);
+  resetLiveCinematicFx();
+  setLiveFeverVisual(false);
+  state.liveFeverActive = false;
+  state.liveFeverEndAt = 0;
+  state.liveFeverShield = false;
+  el.bgm.pause();
+  state.liveMusicSelect.disabled = false;
+  el.liveStartBtn.style.display = "block";
+  if (el.liveTutorialBtn) el.liveTutorialBtn.style.display = "block";
+  if (el.liveTutorialEndBtn) el.liveTutorialEndBtn.hidden = true;
+  if (el.liveBrief) el.liveBrief.classList.add("show");
+  updateLiveHud();
+}
+
+function stopLiveTutorialByButton() {
+  if (!state.liveActive) return;
+  // Force return to the live briefing screen even if async start flow is in-flight.
+  stopLiveGame();
+  openLiveGame();
+}
+
+function skipLiveGame() {
+  if (!state.liveActive) return;
+  if (state.liveTutorialMode) {
+    finishLiveTutorial();
+    return;
+  }
+  state.liveScore = LIVE_SCORE_BAR_MAX;
+  endLiveGame();
 }
 
 async function prepareLiveTrack(trackKey) {
@@ -682,7 +733,9 @@ function liveTick(now) {
   const dt = Math.max(0, (now - state.liveLastTick) / 1000);
   state.liveLastTick = now;
 
-  state.liveTimeLeft = Math.max(0, state.liveTimeLeft - dt);
+  if (!state.liveTutorialMode) {
+    state.liveTimeLeft = Math.max(0, state.liveTimeLeft - dt);
+  }
   state.liveElapsed += dt;
   if (state.liveElapsed >= state.liveKeyMiniNextAt) {
     beginLiveKeyMiniCall(now);
@@ -732,14 +785,17 @@ function liveTick(now) {
 
   updateLiveHud();
 
-  if (state.liveTimeLeft <= 0) {
+  if (!state.liveTutorialMode && state.liveTimeLeft <= 0) {
     endLiveGame();
     return;
   }
   state.liveLoopId = requestAnimationFrame(liveTick);
 }
 
-async function startLiveRound() {
+async function startLiveRound(tutorialMode = false) {
+  const roundToken = (state.liveRoundToken || 0) + 1;
+  state.liveRoundToken = roundToken;
+  state.liveTutorialMode = !!tutorialMode;
   state.liveScore = 0;
   state.liveMood = 50;
   state.liveCombo = 0;
@@ -775,6 +831,9 @@ async function startLiveRound() {
   state.liveMusic = el.liveMusicSelect.value;
   applyLiveStatusEffect();
   el.liveStartBtn.style.display = "none";
+  if (el.liveTutorialBtn) el.liveTutorialBtn.style.display = "none";
+  if (el.liveTutorialEndBtn) el.liveTutorialEndBtn.hidden = !state.liveTutorialMode;
+  if (el.liveBrief) el.liveBrief.classList.remove("show");
   el.liveMusicSelect.disabled = true;
   el.liveNote.textContent = "上から下へ流れる。赤はタップで消す、緑はスルー。下到達で判定。赤タップは少し＋、緑タップはマイナス。";
   clearLiveVoices();
@@ -782,7 +841,7 @@ async function startLiveRound() {
   setLiveCallVisible(false);
   setupLiveCastLane();
   const selected = await prepareLiveTrack(state.liveMusic);
-  if (!state.liveActive) return;
+  if (!state.liveActive || !state.liveRunning || state.liveRoundToken !== roundToken) return;
   state.liveDurationSec = LIVE_ROUND_DURATION_SEC;
   state.liveTimeLeft = state.liveDurationSec;
   updateLiveHud();
@@ -805,6 +864,7 @@ async function startLiveRound() {
 function openLiveGame() {
   state.liveActive = true;
   state.liveRunning = false;
+  state.liveTutorialMode = false;
   state.liveScore = 0;
   state.liveMood = 50;
   state.liveCombo = 0;
@@ -833,6 +893,9 @@ function openLiveGame() {
   setLiveFeverVisual(false);
   clearLiveVoices();
   el.liveStartBtn.style.display = "block";
+  if (el.liveTutorialBtn) el.liveTutorialBtn.style.display = "block";
+  if (el.liveTutorialEndBtn) el.liveTutorialEndBtn.hidden = true;
+  if (el.liveBrief) el.liveBrief.classList.add("show");
   el.liveMusicSelect.disabled = false;
   el.liveNote.textContent = "上から下へ流れる。赤はタップで消す、緑は触らず流す。下到達で判定。赤タップは少し＋、緑タップはマイナス。";
   el.liveCutin.classList.remove("play");
@@ -851,9 +914,15 @@ function openLiveGame() {
   });
 }
 
+function startLiveTutorial() {
+  startLiveRound(true);
+}
+
 function stopLiveGame() {
   state.liveActive = false;
   state.liveRunning = false;
+  state.liveTutorialMode = false;
+  state.liveRoundToken += 1;
   state.liveFeverActive = false;
   state.liveFeverEndAt = 0;
   state.liveFeverShield = false;
@@ -876,6 +945,8 @@ function stopLiveGame() {
   clearLiveVoices();
   el.app.classList.remove("live-mode");
   el.liveGameLayer.classList.remove("active");
+  if (el.liveBrief) el.liveBrief.classList.remove("show");
+  if (el.liveTutorialEndBtn) el.liveTutorialEndBtn.hidden = true;
   el.textboxAdvance.classList.remove("hidden");
   state.liveCastActors = [];
   el.liveCutin.classList.remove("play");

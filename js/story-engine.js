@@ -112,6 +112,28 @@ function pulseTalkingCharacter(scene) {
   node.classList.add("talk-pop");
 }
 
+function hideFinalScoreLayer() {
+  if (!el.finalScoreLayer) return;
+  el.finalScoreLayer.classList.remove("active");
+  el.textboxAdvance.classList.remove("hidden");
+}
+
+function showFinalScoreLayer() {
+  if (!el.finalScoreLayer) return;
+  const guitar = Math.max(0, Math.round(state.guitarFinalScore || 0));
+  const bass = Math.max(0, Math.round(state.bassFinalScore || 0));
+  const drum = Math.max(0, Math.round(state.drumFinalScore || 0));
+  const live = Math.max(0, Math.round(state.liveFinalScore || 0));
+  const total = guitar + bass + drum + live;
+  if (el.finalGuitarScore) el.finalGuitarScore.textContent = `${guitar}`;
+  if (el.finalBassScore) el.finalBassScore.textContent = `${bass}`;
+  if (el.finalDrumScore) el.finalDrumScore.textContent = `${drum}`;
+  if (el.finalLiveScore) el.finalLiveScore.textContent = `${live}`;
+  if (el.finalTotalScore) el.finalTotalScore.textContent = `${total}`;
+  el.finalScoreLayer.classList.add("active");
+  el.textboxAdvance.classList.add("hidden");
+}
+
 function getResultScene() {
   if (state.livePerformanceTier === "legend") {
     return {
@@ -119,10 +141,7 @@ function getResultScene() {
       chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "drum" }],
       speaker: "SYSTEM",
       text: `LEGEND LIVE: SCORE ${state.liveScore}。150ライン突破、会場全体が大熱狂！`,
-      choices: [
-        { text: "もう一度プレイする", next: "__restart" },
-        { text: "タイトルへ戻る", next: "__title" }
-      ]
+      next: "finalScores"
     };
   }
   if (state.livePerformanceTier === "great") {
@@ -131,10 +150,7 @@ function getResultScene() {
       chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "guitar" }],
       speaker: "SYSTEM",
       text: `GREAT LIVE: SCORE ${state.liveScore}。130ライン突破、ライブは大成功！`,
-      choices: [
-        { text: "もう一度プレイする", next: "__restart" },
-        { text: "タイトルへ戻る", next: "__title" }
-      ]
+      next: "finalScores"
     };
   }
   if (state.livePerformanceTier === "good") {
@@ -143,10 +159,7 @@ function getResultScene() {
       chars: [{ slot: "left", key: "hero" }, { slot: "right", key: "bass" }],
       speaker: "SYSTEM",
       text: `GOOD LIVE: SCORE ${state.liveScore}。110ライン突破、観客はしっかり盛り上がった。`,
-      choices: [
-        { text: "もう一度プレイする", next: "__restart" },
-        { text: "タイトルへ戻る", next: "__title" }
-      ]
+      next: "finalScores"
     };
   }
   if (state.livePerformanceTier === "clear") {
@@ -155,10 +168,7 @@ function getResultScene() {
       chars: [{ slot: "left", key: "hero" }],
       speaker: "SYSTEM",
       text: `CLEAR: SCORE ${state.liveScore}。90ライン突破、ライブ成功！次はもっと上を目指そう。`,
-      choices: [
-        { text: "最初からやり直す", next: "__restart" },
-        { text: "タイトルへ戻る", next: "__title" }
-      ]
+      next: "finalScores"
     };
   }
   return {
@@ -166,14 +176,12 @@ function getResultScene() {
     chars: [{ slot: "left", key: "hero" }],
     speaker: "SYSTEM",
     text: `MISS: SCORE ${state.liveScore}。90ライン未達。次はリズムと判断を合わせよう。`,
-    choices: [
-      { text: "最初からやり直す", next: "__restart" },
-      { text: "タイトルへ戻る", next: "__title" }
-    ]
+    next: "finalScores"
   };
 }
 
 function renderScene(scene) {
+  hideFinalScoreLayer();
   setBackground(scene.bg);
   setCharacters(scene.chars);
   pulseTalkingCharacter(scene);
@@ -249,6 +257,13 @@ function goScene(key) {
     renderScene(getResultScene());
     return;
   }
+  if (key === "finalScores") {
+    const scene = sceneData[key];
+    if (!scene) return;
+    renderScene(scene);
+    showFinalScoreLayer();
+    return;
+  }
   const scene = sceneData[key];
   if (!scene) return;
   renderScene(scene);
@@ -291,8 +306,13 @@ function startGame() {
   state.livePerformanceTier = "fail";
   state.liveScore = 0;
   state.memberStatus = { guitar: 0, bass: 0, drum: 0 };
+  state.guitarFinalScore = 0;
+  state.bassFinalScore = 0;
+  state.drumFinalScore = 0;
+  state.liveFinalScore = 0;
   state.recruitMiss = { bass: 0, drum: 0 };
   state.storyAdvanceLockUntil = 0;
+  hideFinalScoreLayer();
   updateHud();
   updateStatusPanel();
   state.currentScene = "intro1";
